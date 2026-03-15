@@ -1,0 +1,12 @@
+{
+  "name": "strict_guard",
+  "description": "提高拒答门槛并要求更多证据块，适合观察保守策略下的召回损失。",
+  "top_k": 2,
+  "retrieval_candidate_k": 20,
+  "chunk_size": 500,
+  "chunk_overlap": 80,
+  "retrieval_threshold": 0.22,
+  "min_evidence_chunks": 2,
+  "prompt_version": "v1-strict"
+}
+

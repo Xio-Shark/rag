@@ -1,0 +1,108 @@
+{
+  "dataset_name": "baseline_v1",
+  "cases": [
+    {
+      "name": "平台能力",
+      "query": "系统支持哪些核心能力？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/rag/data/docs/sample_company_policy.md"
+      ],
+      "expected_keywords": [
+        "文档导入",
+        "切片索引",
+        "检索召回",
+        "引用返回"
+      ],
+      "forbidden_terms": [
+        "图像生成"
+      ]
+    },
+    {
+      "name": "幻觉控制与回归",
+      "query": "平台如何同时控制无依据回答并支持回归？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/rag/data/docs/sample_company_policy.md"
+      ],
+      "expected_keywords": [
+        "拒答",
+        "回归对比"
+      ],
+      "forbidden_terms": [
+        "复杂 PDF 表格抽取"
+      ]
+    },
+    {
+      "name": "评测方式",
+      "query": "评测是通过什么方式触发的？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/rag/data/docs/sample_product_notes.txt"
+      ],
+      "expected_keywords": [
+        "命令行",
+        "HTTP"
+      ],
+      "forbidden_terms": [
+        "异步任务队列"
+      ]
+    },
+    {
+      "name": "路线图双事实",
+      "query": "路线图如何安排 PDF 和多知识库能力？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/rag/data/docs/sample_roadmap.md"
+      ],
+      "expected_keywords": [
+        "PDF 文本提取",
+        "多知识库"
+      ],
+      "forbidden_terms": [
+        "复杂表格抽取已在第一版支持"
+      ]
+    },
+    {
+      "name": "V2 扩展能力",
+      "query": "后续版本会扩展哪些能力？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/rag/data/docs/sample_roadmap.md"
+      ],
+      "expected_keywords": [
+        "多知识库",
+        "在线反馈"
+      ],
+      "forbidden_terms": [
+        "复杂表格抽取"
+      ]
+    },
+    {
+      "name": "优化优先级",
+      "query": "系统优先优化哪些指标？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/rag/data/docs/sample_roadmap.md"
+      ],
+      "expected_keywords": [
+        "引用正确率",
+        "groundedness",
+        "拒答准确率"
+      ],
+      "forbidden_terms": [
+        "多轮对话优先"
+      ]
+    },
+    {
+      "name": "无依据问题应拒答",
+      "query": "系统支持图像生成吗？",
+      "should_refuse": true,
+      "expected_source_paths": [],
+      "expected_keywords": [],
+      "forbidden_terms": [
+        "已经支持"
+      ]
+    }
+  ]
+}

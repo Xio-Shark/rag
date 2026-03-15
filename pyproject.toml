@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rag-qa-bench"
+version = "0.1.0"
+description = "RAG 问答质量平台 V1"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+  "alembic>=1.16.0,<2.0.0",
+  "fastapi>=0.115.0,<1.0.0",
+  "httpx>=0.28.0,<1.0.0",
+  "pgvector>=0.3.6,<1.0.0",
+  "pydantic-settings>=2.6.0,<3.0.0",
+  "pydantic>=2.10.0,<3.0.0",
+  "psycopg[binary]>=3.2.0,<4.0.0",
+  "python-multipart>=0.0.19,<1.0.0",
+  "sqlalchemy>=2.0.36,<3.0.0",
+  "uvicorn>=0.32.0,<1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "coverage[toml]>=7.6.0,<8.0.0",
+  "pillow>=11.0.0,<12.0.0",
+  "playwright>=1.52.0,<2.0.0",
+  "pytest>=8.3.0,<9.0.0",
+  "ruff>=0.8.0,<1.0.0",
+]
+local-embeddings = [
+  "sentence-transformers>=3.3.0,<4.0.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = [
+  "e2e: 浏览器级端到端测试",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
+
+[tool.ruff.lint.per-file-ignores]
+"app/api/**/*.py" = ["B008"]

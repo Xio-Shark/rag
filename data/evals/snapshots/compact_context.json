@@ -1,0 +1,12 @@
+{
+  "name": "compact_context",
+  "description": "压缩上下文窗口，只返回一条证据，适合观察多事实问题的回答损失。",
+  "top_k": 1,
+  "retrieval_candidate_k": 12,
+  "chunk_size": 500,
+  "chunk_overlap": 80,
+  "retrieval_threshold": 0.15,
+  "min_evidence_chunks": 1,
+  "prompt_version": "v1-compact"
+}
+
