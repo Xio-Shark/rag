@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import signal
 import subprocess
 import sys
 import time
@@ -1336,20 +1337,108 @@ def test_check_once_resumes_interrupted_loop_with_fake_codex(tmp_path: Path) -> 
     assert result.returncode == 0, result.stderr or result.stdout
     assert "Resumed loop" in result.stdout
 
+    # `--check-once` 的契约是“唤醒已中断主循环并返回”，
+    # 后台 detached 主循环的完整收尾由单轮主循环集成测试单独覆盖，
+    # 这里仅锁定 resume 行为和状态落盘，避免把异步后台收尾时序绑定成脆弱断言。
     deadline = time.monotonic() + 10.0
+    resumed_state: dict[str, object] | None = None
     while time.monotonic() < deadline:
-        state = json.loads(paths.state_path.read_text(encoding="utf-8"))
-        if state.get("status") == "max_iterations_reached":
+        try:
+            state = json.loads(paths.state_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            time.sleep(0.05)
+            continue
+        if (
+            state.get("resume_count") == 1
+            and state.get("last_resume_reason") == "resume_after_interrupted"
+            and state.get("loop_pid")
+        ):
+            resumed_state = state
             break
         time.sleep(0.05)
     else:
         raise AssertionError(paths.state_path.read_text(encoding="utf-8"))
 
+    assert resumed_state is not None
+    assert resumed_state["status"] == "running"
+    assert resumed_state["iteration_count"] == 0
+    assert resumed_state["resume_count"] == 1
+    assert resumed_state["last_resume_reason"] == "resume_after_interrupted"
+    assert resumed_state["loop_pid"] is not None
+    assert "Resuming loop: resume_after_interrupted" in paths.watchdog_log_path.read_text(
+        encoding="utf-8"
+    )
+
+    loop_pid = resumed_state["loop_pid"]
+    if isinstance(loop_pid, int):
+        wait_deadline = time.monotonic() + 10.0
+        while time.monotonic() < wait_deadline:
+            state = json.loads(paths.state_path.read_text(encoding="utf-8"))
+            if state.get("status") == "max_iterations_reached" or state.get("loop_pid") is None:
+                break
+            time.sleep(0.05)
+        try:
+            os.kill(loop_pid, signal.SIGTERM)
+        except ProcessLookupError:
+            pass
+
+
+def test_run_watchdog_check_once_resumes_interrupted_loop(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    import scripts.continuous_task_loop as loop_module
+
+    state_dir = tmp_path / "agent-loop"
+    config = LoopConfig(goal="验证 watchdog 恢复", state_dir=state_dir)
+    paths = runtime_paths(state_dir)
+    initialize_runtime_files(config, paths)
+    state = load_or_create_state(config, paths, now_ts="2099-03-15T01:00:00Z")
+    state["status"] = "interrupted"
+    state["last_stop_reason"] = "interrupted"
+    state["updated_at"] = "2099-03-15T01:10:00Z"
+    save_state(paths, state)
+
+    def fake_spawn_detached_loop_process(
+        config: LoopConfig,
+        paths: object,
+        state: dict[str, object],
+        resume_reason: str,
+    ) -> int:
+        assert isinstance(paths, type(runtime_paths(state_dir)))
+        loop_module.prepare_state_for_resume(
+            state,
+            resume_reason=resume_reason,
+            now_ts="2099-03-15T01:11:00Z",
+        )
+        loop_module.mark_loop_process_started(
+            state,
+            pid=43210,
+            started_at="2099-03-15T01:11:00Z",
+        )
+        loop_module.save_state(paths, state)
+        return 43210
+
+    monkeypatch.setattr(
+        loop_module,
+        "spawn_detached_loop_process",
+        fake_spawn_detached_loop_process,
+    )
+
+    action = loop_module.run_watchdog_check_once(config, paths)
+
+    assert action == "resumed"
+    assert "Resumed loop with pid 43210 (resume_after_interrupted)" in capsys.readouterr().out
+
     state = json.loads(paths.state_path.read_text(encoding="utf-8"))
-    assert state["iteration_count"] == 1
+    assert state["status"] == "running"
+    assert state["iteration_count"] == 0
     assert state["resume_count"] == 1
-    assert state["last_resume_reason"]
-    assert state["loop_pid"] is None
+    assert state["last_resume_reason"] == "resume_after_interrupted"
+    assert state["loop_pid"] == 43210
+    assert state["loop_started_at"] == "2099-03-15T01:11:00Z"
+    assert state["active_iteration"] is None
 
 
 def test_check_once_marks_deadline_reached_when_running_process_is_gone(tmp_path: Path) -> None:
