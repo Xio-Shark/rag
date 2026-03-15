@@ -47,6 +47,7 @@
 
 - `release-gate.yml` 本轮新增的是手动触发 workflow，不等于已经完成真实目标环境发布演练。
 - `release` / `post-release` 阶段依然依赖目标环境和人工 cutover，不会被本轮 dry-run 自动替代。
+- 新增的 `workflow_dispatch` workflow 在合入默认分支前，不能直接通过 `gh workflow run release-gate.yml` 从 PR 分支触发；实测会返回 `404 workflow not found on the default branch`。
 
 ## 回滚方式
 
@@ -88,3 +89,11 @@
   - 通过
 - `python3 -m pytest -q`
   - `110 passed, 7 skipped, 2 warnings`
+- `gh workflow run release-gate.yml --ref chore/github-pr-acceptance-evidence -f phase=pre-release -f execute=true`
+  - 返回 `404 workflow not found on the default branch`
+  - 结论：GitHub 要求新的 `workflow_dispatch` workflow 先进入默认分支后才能直接手动触发
+- 基于提交 `27d2fe7 Add manual release gate workflow` 的 PR checks：
+  - `mainline-quality-gate`：通过
+  - `schema-migration-guard`：通过
+  - `verify-visual-baseline-sync`：通过
+  - `visual-regression-e2e`：通过

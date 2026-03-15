@@ -249,6 +249,7 @@ gh workflow run release-gate.yml -f phase=pre-release -f execute=true
 - 当 `execute=true` 时，还会额外上传 `release-gate-execution-log` artifact
 - 如果只想先在 GitHub 上看 dry-run 计划，把 `execute=true` 改成 `execute=false`
 - `post-release` 阶段需要配合 `-f base_url=http://目标地址` 指向真实环境
+- 如果 workflow 还只存在于 PR 分支、尚未进入默认分支，`gh workflow run release-gate.yml` 会返回 `404 workflow not found on the default branch`；这是 GitHub 对新 `workflow_dispatch` workflow 的限制，不是 workflow 文件本身失效
 
 ### 5.1 发布前
 

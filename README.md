@@ -197,6 +197,7 @@ gh workflow run release-gate.yml -f phase=pre-release -f execute=true
 ```
 
 如果只是想在 GitHub 上先看 dry-run 计划，把 `execute=true` 改成 `execute=false`；发布后 smoke check 场景再额外传 `-f base_url=http://目标地址`。
+如果 workflow 还只存在于 PR 分支、尚未合入默认分支，GitHub 会对 `gh workflow run release-gate.yml` 返回 `404 workflow not found on the default branch`；这种情况下先依赖 PR checks 和本地测试验证，待合入后再正式手动触发。
 
 执行发布前检查时，优先使用最小 release gate 入口：
 

@@ -551,9 +551,13 @@
   - `python3 -m ruff check tests/test_release_workflow.py tests/test_release_gate.py tests/test_ci_quality_gate.py`：通过
   - `PYTHONPYCACHEPREFIX=/tmp/pycache python3 -m compileall tests/test_release_workflow.py tests/test_release_gate.py tests/test_ci_quality_gate.py scripts/release_gate.py`：通过
   - `python3 -m pytest -q`：`110 passed, 7 skipped, 2 warnings`
+  - `gh workflow run release-gate.yml --ref chore/github-pr-acceptance-evidence -f phase=pre-release -f execute=true`：返回 `404 workflow not found on the default branch`
+  - 说明：新的 `workflow_dispatch` workflow 在合入默认分支前不能直接从 PR 分支手动触发，这是 GitHub 平台限制
+  - 基于提交 `27d2fe7 Add manual release gate workflow` 的 PR checks：4 项全部通过
 - 风险与未覆盖项：
   - 仍未在真实目标环境执行 `release` / `post-release` 的 execute 演练
   - 当前补的是正式 workflow 入口，不等于已经具备完整生产发布编排
+  - release workflow 需要合入默认分支后才能做真正的 `gh workflow run` 验证
 - 回滚说明：
   - 删除 `.github/workflows/release-gate.yml`
   - 回退 `.github/workflows/mainline-quality-gate.yml`
