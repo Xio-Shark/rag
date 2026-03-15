@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import importlib.util
+
+import pytest
 from fastapi.testclient import TestClient
 
 
@@ -39,6 +42,9 @@ def test_embedding_storage_backend_falls_back_to_json_without_pgvector(
 
 
 def test_embedding_vector_exposes_pgvector_distance_operator() -> None:
+    if importlib.util.find_spec("pgvector") is None:
+        pytest.skip("当前 Python 环境未安装 pgvector，跳过距离比较器断言")
+
     from app.db.models import Chunk
 
     expression = Chunk.embedding.cosine_distance([0.1])

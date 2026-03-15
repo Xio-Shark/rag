@@ -474,9 +474,52 @@
   - `python3 -m pytest -q tests/test_continuous_task_loop.py -k 'check_once_resumes_interrupted_loop_with_fake_codex or run_watchdog_check_once_resumes_interrupted_loop or check_once_marks_deadline_reached_when_running_process_is_gone'`：`3 passed`
   - `python3 -m ruff check tests/test_continuous_task_loop.py`：通过
 - 风险与未覆盖项：
-  - 尚未重新推送并确认 GitHub 远端 `mainline-quality-gate` 转绿
-  - 尚未处理本地 `pgvector` 缺失导致的全量 pytest 环境差异
+  - 当前主线已修复，但还需记录最新远端 run 结果和本地 `pgvector` 环境差异收口
 - 回滚说明：
   - 回退 `tests/test_continuous_task_loop.py`
   - 删除 `docs/agent-runs/2026-03-16-github-pr-acceptance-closure.md`
+  - 回退 `TASK_LOG.md` 本节
+
+## 2026-03-16 GitHub PR 验收最终转绿
+
+- 任务类型：CI / 验收结果确认
+- 项目分类：C 成熟项目优化 / 重构
+- 风险分级：R1
+- 风险依据：本轮只确认远端结果并同步文档，不再修改主逻辑
+- 结果：
+  - 基于提交 `1148350 Stabilize watchdog resume CI checks`，PR `#1` 的 4 条 checks 已全部通过
+  - `mainline-quality-gate`：通过
+  - `schema-migration-guard`：通过
+  - `verify-visual-baseline-sync`：通过
+  - `visual-regression-e2e`：通过
+- 结论：
+  - 真实 GitHub PR 验收这条主线已完成
+  - 后续剩余未完成项转移为 release workflow、PostgreSQL + `pgvector` 真实链路、统一 metrics/trace
+- 回滚说明：
+  - 本节仅同步文档结论，无额外代码回滚动作
+
+## 2026-03-16 pgvector 环境兼容收口
+
+- 任务类型：测试稳定性 / 环境兼容性
+- 项目分类：C 成熟项目优化 / 重构
+- 风险分级：R1
+- 风险依据：仅调整测试在缺少依赖时的信号表达，不改运行时逻辑
+- 目标：
+  - 消除当前机器缺少 `pgvector` 时的全量 `pytest` 假红
+  - 把环境差异从代码回归中分离出来
+- 方案结论：
+  - 在 `tests/test_database_compatibility.py` 中对缺少 `pgvector` 的环境显式 skip 距离比较器断言
+- 实现结果：
+  - 已更新 `tests/test_database_compatibility.py`
+  - 当前机器未安装 `pgvector` 时，该断言会直接 skip 并输出明确原因
+- 验证结果：
+  - `python3 -m pytest -q tests/test_database_compatibility.py`：`5 passed, 1 skipped`
+  - `python3 -m ruff check tests/test_database_compatibility.py`：通过
+  - `python3 -m pytest -q`：`108 passed, 7 skipped, 2 warnings`
+- 风险与未覆盖项：
+  - 还没有在已安装 `pgvector` 的当前机器上重跑同一路径
+  - PostgreSQL + `pgvector` 端到端链路仍未形成正式验收证据
+- 回滚说明：
+  - 回退 `tests/test_database_compatibility.py`
+  - 删除 `docs/agent-runs/2026-03-16-pgvector-environment-compat.md`
   - 回退 `TASK_LOG.md` 本节
