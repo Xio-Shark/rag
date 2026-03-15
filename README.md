@@ -16,6 +16,7 @@
 - [RUNBOOK.md](RUNBOOK.md)：启动、发布前检查、故障排查和回滚手册
 - [docs/continuous-task-loop.md](docs/continuous-task-loop.md)：本地连续任务循环与跨会话 handoff
 - [docs/visual-regression-baselines.md](docs/visual-regression-baselines.md)：视觉回归资产与维护流程
+- [docs/agent-runs/2026-03-15-github-pr-acceptance.md](docs/agent-runs/2026-03-15-github-pr-acceptance.md)：真实 GitHub PR 验收记录与证据回填入口
 
 ## 快速开始
 

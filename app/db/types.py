@@ -23,6 +23,7 @@ class EmbeddingVector(TypeDecorator):
 
     impl = JSON
     cache_ok = True
+    # 让 ORM 属性在 PostgreSQL + pgvector 场景下暴露距离比较操作。
     if Vector is not None:  # pragma: no branch - 依赖已安装时需要暴露 pgvector 比较器
         comparator_factory = Vector.comparator_factory
 
