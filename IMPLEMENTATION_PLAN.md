@@ -104,6 +104,7 @@
 当前进展：
 
 - 已补最小请求级 observability：统一 `X-Request-ID`、请求日志和关键写操作 completion log
+- 已补 `/metrics` 最小请求级指标出口
 - 已补 `APP_LOG_LEVEL` 配置和运行手册中的最小排障口径
 - 剩余重点仍是集中式日志/指标/trace 与更细粒度 rollout
 
@@ -115,7 +116,7 @@
 
 - 将环境变量级开关进一步收敛成更细粒度的特性开关约定
 - 增加认证或最小访问控制
-- 补统一日志 / 指标导出
+- 在 `/metrics` 基础上决定是否接入 Prometheus / OpenTelemetry 等外部采集链路
 - 视需求再考虑队列、异步任务或多知识库
 
 验收：

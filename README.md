@@ -131,7 +131,8 @@
 - 当前已补最小特性开关：`FEATURE_EVALS_ENABLED=false` 可关闭评测/回归相关 API 与工作台入口；`FEATURE_REPLAY_EXPERIMENTS_ENABLED=false` 可单独关闭 bad case 回放实验。当前实际生效状态会直接出现在 `/v1/health` 的 `feature_flags` 字段里。
 - 当前已补最小请求级 observability：所有 HTTP 响应都会带 `X-Request-ID`；如果调用方已传该 header，服务会沿用原值，便于把客户端、服务端和后续排障记录串起来。
 - 当前请求日志消息体为 JSON，最小字段包括 `event`、`request_id`、`method`、`path`、`status_code`、`duration_ms`；核心写操作还会额外输出 `documents.import.completed`、`qa.ask.completed`、`eval.run.completed`、`eval.replay.completed` 这类 completion log。
-- `APP_LOG_LEVEL` 控制应用日志级别，默认 `INFO`；当前最小 observability 仍主要面向本地 stdout/stderr，不包含外部集中采集、告警或 trace 平台。
+- 当前还提供 `/metrics` 文本端点，最小暴露 `rag_http_requests_total`、`rag_http_request_duration_ms_count`、`rag_http_request_duration_ms_sum` 三类请求级指标。
+- `APP_LOG_LEVEL` 控制应用日志级别，默认 `INFO`；当前最小 observability 仍主要面向本地 stdout/stderr 和 `/metrics`，不包含外部集中采集、告警或 trace 平台。
 - 当配置 `OPENAI_API_KEY` 时，生成层优先调用线上模型；否则自动回退到可解释的抽取式回答生成器。
 - 小规模数据集默认使用精确检索，不启用近似索引，便于评测稳定和参数回归。
 - 评测快照放在 `data/evals/snapshots/`，评测产物默认输出到 `output/evals/<eval_run_id>/report.json` 和 `report.md`。

@@ -69,6 +69,7 @@ uvicorn app.main:app --reload
 
 ```bash
 curl -s http://127.0.0.1:8000/v1/health
+curl -s http://127.0.0.1:8000/metrics | head
 python3 -m app.cli.search --query "系统支持什么"
 python3 -m app.cli.eval run --dataset baseline_v1 --snapshot default
 ```
@@ -78,6 +79,7 @@ python3 -m app.cli.eval run --dataset baseline_v1 --snapshot default
 - `/v1/health` 返回 `database_ok=true`
 - `/v1/health` 中 `database_backend` 与当前模式一致，且 `embedding_storage` 与预期兼容策略一致
 - `/v1/health` 中 `feature_flags` 与当前 `.env` 配置一致
+- `/metrics` 至少包含 `rag_http_requests_total`
 - HTTP 响应头里能看到 `X-Request-ID`
 - 搜索命令能返回候选证据
 - 评测命令能输出 `eval_run_id` 和报告路径
@@ -96,6 +98,11 @@ curl -i http://127.0.0.1:8000/v1/health
   - `qa.ask.completed`
   - `eval.run.completed`
   - `eval.replay.completed`
+- 最小指标出口：
+  - `/metrics`
+  - `rag_http_requests_total`
+  - `rag_http_request_duration_ms_count`
+  - `rag_http_request_duration_ms_sum`
 
 排障建议：
 

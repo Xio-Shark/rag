@@ -562,3 +562,31 @@
   - 删除 `.github/workflows/release-gate.yml`
   - 回退 `.github/workflows/mainline-quality-gate.yml`
   - 回退新增测试和文档同步
+
+## 2026-03-16 Metrics Endpoint
+
+- 任务类型：运行治理 / observability 增强
+- 项目分类：C 成熟项目优化 / 重构
+- 风险分级：R2
+- 风险依据：会影响全局 HTTP 中间件与新指标端点的输出，但不改业务逻辑、数据库和部署架构
+- 目标：
+  - 在现有 request id 和结构化日志之外补 `/metrics`
+  - 暴露最小请求级指标，给后续 Prometheus/采集链路留下标准出口
+- 方案结论：
+  - 不引入新依赖
+  - 使用现有 HTTP 中间件的请求完成时机记录最小请求级指标
+- 实现结果：
+  - `app/core/observability.py` 新增 `rag_http_requests_total`、`rag_http_request_duration_ms_count`、`rag_http_request_duration_ms_sum` 三类指标
+  - `app/main.py` 新增 `/metrics` 文本端点
+  - 更新 `tests/test_observability.py`
+  - 更新 `README.md`、`RUNBOOK.md`、`ARCHITECTURE.md`、`IMPLEMENTATION_PLAN.md`
+- 验证结果：
+  - `python3 -m pytest -q tests/test_observability.py`：`7 passed`
+  - `python3 -m ruff check app tests`：通过
+  - `python3 -m pytest -q`：`111 passed, 7 skipped, 2 warnings`
+- 风险与未覆盖项：
+  - 当前只覆盖请求级计数与耗时汇总，没有 histogram、trace 或外部采集
+  - 指标是单进程内存态，尚未覆盖多进程或多实例聚合
+- 回滚说明：
+  - 回退 `app/core/observability.py`、`app/main.py`、`tests/test_observability.py`
+  - 回退 observability 相关文档和本任务日志节

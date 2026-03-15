@@ -148,6 +148,36 @@ def test_eval_run_emits_completion_log_with_eval_run_id(prepared_environment, ca
     assert eval_event["case_count"] == payload["case_count"]
 
 
+def test_metrics_endpoint_exposes_request_counters(prepared_environment) -> None:
+    from app.core.observability import reset_metrics
+    from app.db.session import init_database
+    from app.main import app
+
+    init_database()
+    reset_metrics()
+
+    with TestClient(app) as client:
+        health_response = client.get("/v1/health", headers={"X-Request-ID": "metrics-health-001"})
+        assert health_response.status_code == 200
+
+        metrics_response = client.get("/metrics")
+
+    assert metrics_response.status_code == 200
+    assert metrics_response.headers["content-type"].startswith("text/plain")
+    assert "rag_http_requests_total" in metrics_response.text
+    assert 'rag_http_requests_total{method="GET",path="/v1/health",status_code="200"} 1' in (
+        metrics_response.text
+    )
+    assert (
+        'rag_http_request_duration_ms_count{method="GET",path="/v1/health",status_code="200"} 1'
+        in metrics_response.text
+    )
+    assert (
+        'rag_http_request_duration_ms_sum{method="GET",path="/v1/health",status_code="200"} '
+        in metrics_response.text
+    )
+
+
 def test_observability_docs_reference_request_id_and_log_level() -> None:
     readme_text = (ROOT_DIR / "README.md").read_text(encoding="utf-8")
     architecture_text = (ROOT_DIR / "ARCHITECTURE.md").read_text(encoding="utf-8")
@@ -160,3 +190,6 @@ def test_observability_docs_reference_request_id_and_log_level() -> None:
     assert "APP_LOG_LEVEL" in readme_text
     assert "APP_LOG_LEVEL" in runbook_text
     assert "APP_LOG_LEVEL=INFO" in env_example_text
+    assert "/metrics" in readme_text
+    assert "/metrics" in architecture_text
+    assert "/metrics" in runbook_text

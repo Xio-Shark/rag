@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.api.routes.documents import router as documents_router
@@ -12,7 +12,12 @@ from app.api.routes.evals import router as evals_router
 from app.api.routes.health import router as health_router
 from app.api.routes.qa import router as qa_router
 from app.core.config import get_settings
-from app.core.observability import configure_logging, observe_request
+from app.core.observability import (
+    METRICS_CONTENT_TYPE,
+    configure_logging,
+    observe_request,
+    render_metrics,
+)
 from app.db.session import init_database
 
 
@@ -38,3 +43,8 @@ app.include_router(evals_router, prefix="/v1")
 @app.get("/", include_in_schema=False)
 def index() -> FileResponse:
     return FileResponse(static_dir / "index.html")
+
+
+@app.get("/metrics", include_in_schema=False)
+def metrics() -> PlainTextResponse:
+    return PlainTextResponse(render_metrics(), media_type=METRICS_CONTENT_TYPE)

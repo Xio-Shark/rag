@@ -51,6 +51,7 @@
 
 - 所有 HTTP 响应都会返回 `X-Request-ID`；如果调用方已传入该 header，服务会沿用原值。
 - 请求日志消息体采用 JSON 负载，最小字段包括 `event`、`request_id`、`method`、`path`、`status_code`、`duration_ms`。
+- `/metrics` 会暴露最小请求级指标：`rag_http_requests_total`、`rag_http_request_duration_ms_count`、`rag_http_request_duration_ms_sum`。
 - 核心写操作会额外输出 completion log，当前覆盖 `documents.import.completed`、`qa.ask.completed`、`eval.run.completed`、`eval.replay.completed`。
 - `APP_LOG_LEVEL` 控制应用日志级别；当前日志主要输出到进程 stdout/stderr，还没有独立指标导出或 trace 平台。
 
@@ -81,7 +82,7 @@ flowchart LR
 | 服务层 | `app/services` | 承载导入、检索、问答生成、评测与回放等核心业务逻辑 |
 | 仓储层 | `app/repositories` | 封装 SQLAlchemy 查询与持久化操作 |
 | 数据层 | `app/db` | 定义模型、数据库会话、向量类型兼容逻辑 |
-| 运行治理层 | `app/core/observability.py` | 统一请求 ID、请求日志和 completion log 的最小 observability 约定 |
+| 运行治理层 | `app/core/observability.py` | 统一请求 ID、请求日志、最小请求指标和 completion log 的 observability 约定 |
 | 协议层 | `app/schemas` | 定义 API 与内部输出的 Pydantic schema |
 | 前端层 | `app/static` | 单页工作台与各业务面板脚本 |
 | 测试层 | `tests` | 单测、集成、E2E、视觉回归及门禁测试 |
