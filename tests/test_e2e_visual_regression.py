@@ -188,6 +188,7 @@ def _install_snapshot_style(page) -> None:
               font-family: "Courier New", "Liberation Mono", monospace !important;
               letter-spacing: 0 !important;
               text-shadow: none !important;
+              caret-color: transparent !important;
             }
 
             [data-visual-normalized='true'] .section-text,
@@ -222,76 +223,102 @@ def _normalize_section_shell(page, section_index: int, label: str) -> None:
           }
 
           section.setAttribute('data-visual-normalized', 'true');
+          const skeletonFill =
+            'repeating-linear-gradient(180deg, rgba(16, 35, 29, 0.14) 0 10px, ' +
+            'transparent 10px 18px)';
 
-          const setHeight = (node, height) => {
-            if (!node || !height) {
-              return;
-            }
-            node.style.height = height;
-            node.style.minHeight = height;
-            node.style.overflow = 'hidden';
-          };
-
-          const setText = (node, text, height = '') => {
+          const applySkeleton = (
+            node,
+            height,
+            width = '100%',
+            radius = '12px',
+            background = skeletonFill
+          ) => {
             if (!node) {
               return;
             }
-            node.textContent = text;
-            setHeight(node, height);
+            node.textContent = '';
+            node.style.width = width;
+            node.style.height = height;
+            node.style.minHeight = height;
+            node.style.overflow = 'hidden';
+            node.style.borderRadius = radius;
+            node.style.background = background;
+            node.style.color = 'transparent';
+            node.style.webkitTextFillColor = 'transparent';
           };
 
-          setText(section.querySelector('.section-kicker'), `${label.toUpperCase()} FLOW`);
-          setText(section.querySelector('.section-title'), `Stable ${label} layout`);
-          setText(
-            section.querySelector('.section-text'),
-            'Snapshot copy is normalized for cross-platform visual regression.',
-            '3.5em'
+          applySkeleton(
+            section.querySelector('.section-kicker'),
+            '28px',
+            '120px',
+            '999px',
+            'linear-gradient(180deg, rgba(16, 35, 29, 0.08), rgba(16, 35, 29, 0.08))'
           );
+          applySkeleton(section.querySelector('.section-title'), '38px', '72%', '14px');
+          applySkeleton(section.querySelector('.section-text'), '56px', '100%', '14px');
 
           section.querySelectorAll('.path-pill').forEach((node, index) => {
-            node.textContent = `STEP ${index + 1}`;
+            applySkeleton(
+              node,
+              '30px',
+              `${84 + (index % 2) * 12}px`,
+              '999px',
+              'linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92))'
+            );
           });
 
           section.querySelectorAll('.card-step').forEach((node, index) => {
-            node.textContent = String(index + 1).padStart(2, '0');
+            applySkeleton(
+              node,
+              '22px',
+              `${42 + (index % 3) * 6}px`,
+              '999px',
+              'linear-gradient(180deg, rgba(11, 93, 75, 0.12), rgba(11, 93, 75, 0.12))'
+            );
           });
 
           section.querySelectorAll('article.card h2').forEach((node, index) => {
-            node.textContent = `${label} panel ${index + 1}`;
+            applySkeleton(node, '24px', `${58 + (index % 3) * 8}%`, '10px');
           });
 
           section.querySelectorAll('.card-lead').forEach((node, index) => {
-            setText(node, `Stable lead copy ${index + 1}.`, '3.3em');
+            applySkeleton(node, `${50 + (index % 2) * 6}px`, '100%', '12px');
           });
 
           section.querySelectorAll('button').forEach((node, index) => {
-            node.textContent = `ACTION ${index + 1}`;
+            node.textContent = '';
             node.style.minHeight = '52px';
             node.style.lineHeight = '1.2';
+            node.style.color = 'transparent';
+            node.style.webkitTextFillColor = 'transparent';
           });
 
           section.querySelectorAll('select').forEach((node, index) => {
             const option = document.createElement('option');
             option.value = `normalized-${label}-${index + 1}`;
-            option.textContent = `OPTION ${index + 1}`;
+            option.textContent = '';
             node.replaceChildren(option);
             node.value = option.value;
             node.style.minHeight = '52px';
             node.style.lineHeight = '1.2';
+            node.style.color = 'transparent';
+            node.style.webkitTextFillColor = 'transparent';
           });
 
-          section.querySelectorAll('input').forEach((node, index) => {
-            if (node.type === 'number') {
-              node.value = String(index + 1);
-            } else {
-              node.value = `input-${index + 1}`;
-              node.placeholder = `input-${index + 1}`;
-            }
+          section.querySelectorAll('input').forEach((node) => {
+            node.value = '';
+            node.placeholder = '';
+            node.style.color = 'transparent';
+            node.style.webkitTextFillColor = 'transparent';
           });
 
-          section.querySelectorAll('textarea').forEach((node, index) => {
-            node.value = `Prompt ${index + 1}\\nStable snapshot`;
+          section.querySelectorAll('textarea').forEach((node) => {
+            node.value = '';
+            node.placeholder = '';
             node.style.height = '112px';
+            node.style.color = 'transparent';
+            node.style.webkitTextFillColor = 'transparent';
           });
 
           section.querySelectorAll('button, input, select, textarea').forEach((node) => {
@@ -323,65 +350,62 @@ def _normalize_experiment_center(page) -> None:
           if (!section) {
             return;
           }
+          const skeletonFill =
+            'repeating-linear-gradient(180deg, rgba(16, 35, 29, 0.14) 0 10px, ' +
+            'transparent 10px 18px)';
 
-          const setBlock = (selector, text, height = '') => {
+          const setBlock = (selector, height, width = '100%') => {
             const node = section.querySelector(selector);
             if (!node) {
               return;
             }
-            node.textContent = text;
-            if (height) {
-              node.style.height = height;
-              node.style.minHeight = height;
-              node.style.overflow = 'hidden';
-            }
+            node.textContent = '';
+            node.style.width = width;
+            node.style.height = height;
+            node.style.minHeight = height;
+            node.style.overflow = 'hidden';
+            node.style.borderRadius = '12px';
+            node.style.background = skeletonFill;
+            node.style.color = 'transparent';
+            node.style.webkitTextFillColor = 'transparent';
           };
 
-          setBlock('#run-eval-output', 'Run complete\\nstatus=stable\\ncases=4', '4.8em');
-          setBlock('#eval-output', 'Recent runs\\n- default\\n- compact', '5.8em');
-          setBlock(
-            '#compare-output',
-            'Regression summary\\nAction: inspect case\\nMetric delta: stable\\nPriority: medium',
-            '8.4em'
-          );
-          setBlock('#snapshot-output', 'Snapshots\\n- default\\n- compact', '5.8em');
-          setBlock(
-            '#compare-detail-output',
-            'Focused case\\nBase answer\\nTarget answer\\nReport anchor',
-            '8.8em'
-          );
-          setBlock('#report-meta', 'report.md | focused case-1', '2.5em');
-          setBlock('#report-outline-output', 'Outline\\n- case-1\\n- case-2', '5.6em');
-          setBlock(
-            '#report-output',
-            'Case note\\nEvidence summary\\nDecision summary\\nNext action',
-            '13.8em'
-          );
-          setBlock('#replay-context-output', 'Bound case\\nsource=summary-action', '3.6em');
-          setBlock('#replay-output', 'Replay result\\nscore=stable\\nlatency=ok', '6.8em');
-          setBlock(
-            '#replay-compare-output',
-            'Replay diff\\nquality=stable\\nthreshold=unchanged',
-            '6.2em'
-          );
-          setBlock('#replay-history-output', 'Replay history\\n- run-a\\n- run-b', '5.8em');
+          setBlock('#run-eval-output', '5.2em');
+          setBlock('#eval-output', '6em');
+          setBlock('#compare-output', '8.8em');
+          setBlock('#snapshot-output', '6em');
+          setBlock('#compare-detail-output', '9.2em');
+          setBlock('#report-meta', '2.6em');
+          setBlock('#report-outline-output', '5.8em');
+          setBlock('#report-output', '14.2em');
+          setBlock('#replay-context-output', '3.8em');
+          setBlock('#replay-output', '7em');
+          setBlock('#replay-compare-output', '6.6em');
+          setBlock('#replay-history-output', '6em');
 
           const reportCaption = section.querySelector('.report-caption');
           if (reportCaption) {
-            reportCaption.textContent = 'Outline copy is normalized for visual stability.';
-            reportCaption.style.height = '3.5em';
-            reportCaption.style.minHeight = '3.5em';
+            reportCaption.textContent = '';
+            reportCaption.style.height = '3.8em';
+            reportCaption.style.minHeight = '3.8em';
+            reportCaption.style.borderRadius = '12px';
+            reportCaption.style.background = skeletonFill;
           }
 
           const reportRestoreButton = section.querySelector('#report-restore-button');
           if (reportRestoreButton) {
-            reportRestoreButton.textContent = 'RESTORE';
+            reportRestoreButton.textContent = '';
             reportRestoreButton.disabled = false;
           }
 
           const reportSummary = section.querySelector('.report-nav summary');
           if (reportSummary) {
-            reportSummary.textContent = 'REPORT OUTLINE';
+            reportSummary.textContent = '';
+            reportSummary.style.height = '22px';
+            reportSummary.style.width = '120px';
+            reportSummary.style.borderRadius = '10px';
+            reportSummary.style.background =
+              'linear-gradient(180deg, rgba(16, 35, 29, 0.12), rgba(16, 35, 29, 0.12))';
           }
 
           section.querySelectorAll('details').forEach((node) => {
@@ -413,6 +437,9 @@ def _normalize_qa_evidence_sections(page) -> None:
           if (!qaSection || !evidenceSection) {
             return;
           }
+          const skeletonFill =
+            'repeating-linear-gradient(180deg, rgba(16, 35, 29, 0.14) 0 10px, ' +
+            'transparent 10px 18px)';
 
           const qaCards = qaSection.querySelectorAll('.grid > .card');
           qaCards.forEach((card, index) => {
@@ -421,45 +448,27 @@ def _normalize_qa_evidence_sections(page) -> None:
             }
           });
 
-          const setBlock = (root, selector, text, height = '') => {
+          const setBlock = (root, selector, height, width = '100%') => {
             const node = root.querySelector(selector);
             if (!node) {
               return;
             }
-            node.textContent = text;
-            if (height) {
-              node.style.height = height;
-              node.style.minHeight = height;
-              node.style.overflow = 'hidden';
-            }
+            node.textContent = '';
+            node.style.width = width;
+            node.style.height = height;
+            node.style.minHeight = height;
+            node.style.overflow = 'hidden';
+            node.style.borderRadius = '12px';
+            node.style.background = skeletonFill;
+            node.style.color = 'transparent';
+            node.style.webkitTextFillColor = 'transparent';
           };
 
-          setBlock(
-            qaSection,
-            '#answer',
-            'Answer summary\\nAudit id: <id>\\nCitation A\\nCitation B',
-            '10.2em'
-          );
-          setBlock(
-            qaSection,
-            '#audit-output',
-            'Audit details\\nCandidate set\\nFailure stage\\nRuntime params',
-            '8.8em'
-          );
-          setBlock(qaSection, '#audit-list-output', 'Audit list\\n- audit-a\\n- audit-b', '5.8em');
-
-          setBlock(
-            evidenceSection,
-            '#chunk-output',
-            'Chunk preview\\nNeighbor chunk\\nReasoning trace\\nSource link',
-            '10.2em'
-          );
-          setBlock(
-            evidenceSection,
-            '#document-output',
-            'Document timeline\\nSection A\\nSection B\\nSection C\\nKeyword hits',
-            '12.4em'
-          );
+          setBlock(qaSection, '#answer', '10.4em');
+          setBlock(qaSection, '#audit-output', '9em');
+          setBlock(qaSection, '#audit-list-output', '6em');
+          setBlock(evidenceSection, '#chunk-output', '10.4em');
+          setBlock(evidenceSection, '#document-output', '12.6em');
         }
         """
     )
@@ -490,6 +499,9 @@ def _normalize_report_panel(page) -> None:
           }
 
           reportCard.setAttribute('data-visual-normalized', 'true');
+          const skeletonFill =
+            'repeating-linear-gradient(180deg, rgba(16, 35, 29, 0.14) 0 10px, ' +
+            'transparent 10px 18px)';
 
           const cardStep = reportCard.querySelector('.card-step');
           if (cardStep) {
@@ -498,48 +510,60 @@ def _normalize_report_panel(page) -> None:
 
           const cardTitle = reportCard.querySelector('h2');
           if (cardTitle) {
-            cardTitle.textContent = 'Report panel';
+            cardTitle.textContent = '';
+            cardTitle.style.width = '58%';
+            cardTitle.style.height = '24px';
+            cardTitle.style.borderRadius = '10px';
+            cardTitle.style.background = skeletonFill;
           }
 
           const reportLead = reportCard.querySelector('.card-lead');
           if (reportLead) {
-            reportLead.textContent = 'Report layout is normalized for cross-platform checks.';
-            reportLead.style.height = '3.3em';
-            reportLead.style.minHeight = '3.3em';
+            reportLead.textContent = '';
+            reportLead.style.height = '54px';
+            reportLead.style.minHeight = '54px';
+            reportLead.style.borderRadius = '12px';
+            reportLead.style.background = skeletonFill;
           }
 
           const reportRunSelect = document.getElementById('report-run-select');
           if (reportRunSelect) {
             const option = document.createElement('option');
             option.value = 'normalized-run';
-            option.textContent = 'OPTION 1';
+            option.textContent = '';
             reportRunSelect.replaceChildren(option);
             reportRunSelect.value = option.value;
             reportRunSelect.style.minHeight = '52px';
             reportRunSelect.style.lineHeight = '1.2';
+            reportRunSelect.style.color = 'transparent';
+            reportRunSelect.style.webkitTextFillColor = 'transparent';
           }
 
           const reportMeta = document.getElementById('report-meta');
           if (reportMeta) {
-            reportMeta.textContent = 'report.md | focused case-1';
-            reportMeta.style.height = '2.5em';
-            reportMeta.style.minHeight = '2.5em';
+            reportMeta.textContent = '';
+            reportMeta.style.height = '2.6em';
+            reportMeta.style.minHeight = '2.6em';
+            reportMeta.style.borderRadius = '10px';
+            reportMeta.style.background = skeletonFill;
           }
 
           const reportFormatSelect = document.getElementById('report-format-select');
           if (reportFormatSelect) {
             const option = document.createElement('option');
             option.value = 'markdown';
-            option.textContent = 'MARKDOWN';
+            option.textContent = '';
             reportFormatSelect.replaceChildren(option);
             reportFormatSelect.value = option.value;
             reportFormatSelect.style.minHeight = '52px';
             reportFormatSelect.style.lineHeight = '1.2';
+            reportFormatSelect.style.color = 'transparent';
+            reportFormatSelect.style.webkitTextFillColor = 'transparent';
           }
 
           const reportButton = document.getElementById('report-button');
           if (reportButton) {
-            reportButton.textContent = 'READ REPORT';
+            reportButton.textContent = '';
             reportButton.style.display = 'flex';
             reportButton.style.alignItems = 'center';
             reportButton.style.justifyContent = 'center';
@@ -549,35 +573,45 @@ def _normalize_report_panel(page) -> None:
 
           const reportRestoreButton = document.getElementById('report-restore-button');
           if (reportRestoreButton) {
-            reportRestoreButton.textContent = 'RESTORE';
+            reportRestoreButton.textContent = '';
             reportRestoreButton.disabled = false;
           }
 
           const reportSummary = reportCard.querySelector('.report-nav summary');
           if (reportSummary) {
-            reportSummary.textContent = 'REPORT OUTLINE';
+            reportSummary.textContent = '';
+            reportSummary.style.height = '22px';
+            reportSummary.style.width = '120px';
+            reportSummary.style.borderRadius = '10px';
+            reportSummary.style.background =
+              'linear-gradient(180deg, rgba(16, 35, 29, 0.12), rgba(16, 35, 29, 0.12))';
           }
 
           const reportCaption = reportCard.querySelector('.report-caption');
           if (reportCaption) {
-            reportCaption.textContent = 'Outline copy is normalized for visual stability.';
-            reportCaption.style.height = '3.5em';
-            reportCaption.style.minHeight = '3.5em';
+            reportCaption.textContent = '';
+            reportCaption.style.height = '3.8em';
+            reportCaption.style.minHeight = '3.8em';
+            reportCaption.style.borderRadius = '12px';
+            reportCaption.style.background = skeletonFill;
           }
 
           const reportOutline = document.getElementById('report-outline-output');
           if (reportOutline) {
-            reportOutline.textContent = 'Outline\\n- case-1\\n- case-2';
-            reportOutline.style.height = '5.6em';
-            reportOutline.style.minHeight = '5.6em';
+            reportOutline.textContent = '';
+            reportOutline.style.height = '5.8em';
+            reportOutline.style.minHeight = '5.8em';
+            reportOutline.style.borderRadius = '12px';
+            reportOutline.style.background = skeletonFill;
           }
 
           const reportOutput = document.getElementById('report-output');
           if (reportOutput) {
-            reportOutput.textContent =
-              'Case note\\nEvidence summary\\nDecision summary\\nNext action';
-            reportOutput.style.height = '13.8em';
-            reportOutput.style.minHeight = '13.8em';
+            reportOutput.textContent = '';
+            reportOutput.style.height = '14.2em';
+            reportOutput.style.minHeight = '14.2em';
+            reportOutput.style.borderRadius = '12px';
+            reportOutput.style.background = skeletonFill;
           }
 
           reportCard.querySelectorAll('details').forEach((node) => {
