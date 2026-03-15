@@ -1304,10 +1304,11 @@ def test_check_once_resumes_interrupted_loop_with_fake_codex(tmp_path: Path) -> 
     config = LoopConfig(goal="验证 watchdog 恢复", state_dir=state_dir)
     paths = runtime_paths(state_dir)
     initialize_runtime_files(config, paths)
-    state = load_or_create_state(config, paths, now_ts="2026-03-15T01:00:00Z")
+    # 这类子进程测试会读取真实当前时间；用远未来时间避免测试在日后自然过期。
+    state = load_or_create_state(config, paths, now_ts="2099-03-15T01:00:00Z")
     state["status"] = "interrupted"
     state["last_stop_reason"] = "interrupted"
-    state["updated_at"] = "2026-03-15T01:10:00Z"
+    state["updated_at"] = "2099-03-15T01:10:00Z"
     save_state(paths, state)
 
     result = subprocess.run(
@@ -1412,10 +1413,11 @@ def test_watch_mode_emits_progress_report(tmp_path: Path) -> None:
     config = LoopConfig(goal="验证 watchdog 进度播报", state_dir=state_dir)
     paths = runtime_paths(state_dir)
     initialize_runtime_files(config, paths)
-    state = load_or_create_state(config, paths, now_ts="2026-03-15T01:00:00Z")
+    # 这类子进程测试会读取真实当前时间；用远未来时间避免测试在日后自然过期。
+    state = load_or_create_state(config, paths, now_ts="2099-03-15T01:00:00Z")
     state["status"] = "interrupted"
     state["last_stop_reason"] = "interrupted"
-    state["updated_at"] = "2026-03-15T01:10:00Z"
+    state["updated_at"] = "2099-03-15T01:10:00Z"
     save_state(paths, state)
 
     result = subprocess.run(

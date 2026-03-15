@@ -68,6 +68,9 @@ def assert_visual_match(
     expected = Image.open(baseline_path).convert("RGBA")
 
     if actual.size != expected.size:
+        actual_path, diff_path = _diagnostic_artifact_paths(baseline_path)
+        actual_path.write_bytes(image_bytes)
+        diff_path.unlink(missing_ok=True)
         raise AssertionError(
             f"视觉基线尺寸不一致: actual={actual.size}, expected={expected.size}"
         )

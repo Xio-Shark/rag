@@ -66,6 +66,20 @@ def test_assert_visual_match_writes_actual_and_diff_artifacts_on_failure(tmp_pat
     assert any(pixel != (255, 255, 255, 255) for pixel in diff_image.getdata())
 
 
+def test_assert_visual_match_writes_actual_artifact_on_size_mismatch(tmp_path: Path) -> None:
+    baseline_path = tmp_path / "baseline.png"
+    baseline_path.write_bytes(_image_bytes((255, 255, 255, 255), size=(12, 10)))
+    actual_bytes = _image_bytes((255, 255, 255, 255), size=(12, 11))
+
+    with pytest.raises(AssertionError):
+        assert_visual_match(actual_bytes, baseline_path)
+
+    actual_path = tmp_path / "baseline.actual.png"
+    diff_path = tmp_path / "baseline.diff.png"
+    assert actual_path.exists()
+    assert not diff_path.exists()
+
+
 def test_assert_visual_match_removes_stale_diagnostic_artifacts_after_success(
     tmp_path: Path,
 ) -> None:

@@ -309,10 +309,96 @@
   - 初始化 git 并验证远端联通
   - 推送 `main`
   - 创建最小 PR 改动以触发 workflow / artifact / comment
+  - 采集失败检查与 PR comment 证据
+  - 修复真实 PR 暴露的 CI 问题
   - 回填运行证据文档与任务日志
 - 实现结果：
-  - 进行中
+  - 已初始化本地 git 仓库并建立 `main` 基线提交：`7e768f1 Initial import of RAG QA Bench`
+  - 已创建本地证据分支 `chore/github-pr-acceptance-evidence`，并生成证据提交：`1bf0a55 Add PR acceptance evidence hooks`
+  - 证据提交包含：
+    - `README.md` 补 GitHub PR 验收记录入口，用于稳定触发 PR comment workflow
+    - `app/db/types.py` 补 `pgvector` comparator 说明性注释，用于触发主线门禁、迁移门禁和视觉 E2E
+  - 已执行 `python3 -m ruff check app`：通过
+  - 用户已补齐远端权限，`main` 与证据分支均已成功推送到 `origin`
+  - 已安装并登录 `gh` CLI，认证状态为账号 `Xio-Shark (keyring)`
+  - 已创建真实 PR：
+    - `#1 Add GitHub PR acceptance evidence hooks`
+    - `https://github.com/Xio-Shark/rag/pull/1`
+  - 已采集到第一轮真实 GitHub 验收证据：
+    - `mainline-quality-gate` 失败：`https://github.com/Xio-Shark/rag/actions/runs/23112766059/job/67133002716`
+    - `visual-regression-e2e` 失败：`https://github.com/Xio-Shark/rag/actions/runs/23112766043/job/67133002757`
+    - `schema-migration-guard` 通过：`https://github.com/Xio-Shark/rag/actions/runs/23112766057/job/67133002740`
+    - `verify-visual-baseline-sync` 通过：`https://github.com/Xio-Shark/rag/actions/runs/23112766049/job/67133002735`
+    - PR comment（visual baseline summary）：`https://github.com/Xio-Shark/rag/pull/1#issuecomment-4063160556`
+    - PR comment（visual regression diagnostic）：`https://github.com/Xio-Shark/rag/pull/1#issuecomment-4063162103`
+  - 第一轮失败根因已定位：
+    - `tests/test_continuous_task_loop.py` 的 2 条 watchdog 子进程测试把时间写死在 `2026-03-15`，在真实时钟跨过 deadline 后自然退化为 `deadline_reached`
+    - 6 条视觉基线在 GitHub Linux runner 上出现跨平台字体/排版高度漂移
+    - `tests/visual_regression.py` 在“尺寸不一致”场景下不会保存 `.actual.png`，导致失败 comment 没有配套诊断图
+  - 已完成本地修复：
+    - 把 2 条 watchdog 子进程测试改为远未来时间，消除日期依赖
+    - 增强视觉回归归一化，改为更偏结构和交互布局的跨平台快照
+    - 为尺寸不一致场景补 `.actual.png` 产物
+    - 已重建 6 张正式视觉基线
+- 验证结果：
+  - `python3 -m pytest -q tests/test_continuous_task_loop.py -k 'check_once_resumes_interrupted_loop_with_fake_codex or watch_mode_emits_progress_report'`：`2 passed`
+  - `python3 -m pytest -q tests/test_visual_regression.py`：`6 passed`
+  - `UPDATE_VISUAL_BASELINES=1 python3 -m pytest -q tests/test_e2e_visual_regression.py`：`6 passed`
+  - `python3 -m ruff check app tests scripts`：通过
+  - `PYTHONPYCACHEPREFIX=/tmp/pycache python3 -m compileall app tests scripts`：通过
+  - `python3 scripts/render_visual_regression_baselines.py --check`：通过
+  - `python3 -m pytest -q`：`113 passed, 1 failed`
+  - 本地全量唯一剩余失败：
+    - `tests/test_database_compatibility.py::test_embedding_vector_exposes_pgvector_distance_operator`
+    - 原因是当前本机 Python 环境缺少 `pgvector` 包，`importlib.util.find_spec('pgvector') -> None`
+    - 该失败不在本次 GitHub PR 的首轮失败列表中，属于本地环境差异，不是本轮 CI 修复主线
 - 回滚说明：
   - 关闭未合并 PR
   - 删除证据分支
-  - 必要时清理远端测试提交
+  - 回退 `tests/test_continuous_task_loop.py`、`tests/test_e2e_visual_regression.py`、`tests/test_visual_regression.py`、`tests/visual_regression.py`
+  - 恢复 `tests/baselines/*.png` 到修复前版本
+
+## 2026-03-15 当前项目进度复核
+
+- 任务类型：状态评估 / 进度复核
+- 项目分类：F 原型 / Demo
+- 风险分级：R0
+- 风险依据：本轮仅基于现有任务日志、运行证据和 git 状态做汇总，不修改业务逻辑
+- 仓库探测结论：
+  - 已存在：`README.md`、`ARCHITECTURE.md`、`IMPLEMENTATION_PLAN.md`、`RUNBOOK.md`、`.env.example`、`tests/`、`.github/workflows/`、迁移机制、feature flag、release gate、最小 observability、真实本地环境演练证据、真实 GitHub 仓库与远端分支
+  - 缺失：真实 GitHub PR 页面验收记录、正式 release workflow、更细粒度 rollout、统一 metrics/trace
+  - 本轮必须先补齐：无，当前以状态同步为主
+- 当前进度判断：
+  - 演示闭环仍维持在约 `90%~94%`
+  - 产品化治理进度已高于最初评估，但仍未完成真实 GitHub PR 验收与正式发布链路，保守仍按约 `72%~80%` 口径看待
+  - GitHub 验收子任务当前处于“远端仓库已建立、分支已推送、PR 待创建”的中间状态
+- 当前阻塞：
+  - 还没有真实 PR 编号，因此还没有 workflow run、artifact、bot comment、run link 的最终证据
+  - 浏览器自动化访问 GitHub compare 页时处于未登录态；本机也缺少 `gh` CLI
+- 回滚说明：
+  - 本轮仅更新任务日志与忽略规则，无业务回滚动作
+
+## 2026-03-15 安装 gh CLI
+
+- 任务类型：开发环境准备 / GitHub 工具补齐
+- 项目分类：C 成熟项目优化 / 重构（为真实 GitHub PR 验收补齐本机工具）
+- 风险分级：R1
+- 风险依据：仅安装 GitHub CLI，不改业务代码与仓库逻辑
+- 目标：
+  - 安装 `gh` CLI
+  - 消除“缺少 `gh` CLI 无法直接创建 PR”的阻塞
+- 仓库探测结论：
+  - 已存在：真实远端仓库、`main` 基线、证据分支、可用 SSH 权限
+  - 缺失：本机 `gh` CLI
+  - 本轮必须先补齐：`gh` CLI
+- 方案结论：
+  - 采用 `brew install gh`
+- 测试计划：
+  - 安装后执行 `gh --version`
+  - 如需登录，再执行 `gh auth status`
+- 实现结果：
+  - 已通过 `brew install gh` 确认本机可用 `gh`
+  - `gh --version`：`2.88.1 (2026-03-12)`
+  - `gh auth status`：当前未登录任何 GitHub host
+- 回滚说明：
+  - 如安装失败，不影响仓库代码状态；必要时可用 `brew uninstall gh`

@@ -20,7 +20,7 @@
 ## 约束
 
 - 当前目录开始时不是 git worktree。
-- 本机缺少 `gh` CLI，优先用 `git` 和 GitHub 网页/API 完成。
+- GitHub 真实状态必须以 PR 页面、workflow run、artifact 和 bot comment 为准，不能只看本地结果。
 - PR comment 需要同仓库分支，不能依赖 fork PR。
 
 ## 仓库探测
@@ -79,28 +79,151 @@
 2. 推送 `main` 基线。
 3. 创建最小证据分支与 PR。
 4. 等待 Actions 完成并采集证据。
-5. 回填文档与任务日志。
+5. 若真实检查失败，先定位根因，再决定是否在同一 PR 上修复。
+6. 回填文档与任务日志。
 
 ## 实施记录
 
-- 待回填。
+- 已执行 `git init -b main`，并配置本地提交身份：
+  - `user.name=xioshark0127-afk`
+  - `user.email=xioshark0127-afk@users.noreply.github.com`
+- 已确认远端 `https://github.com/Xio-Shark/rag.git` 当前为空仓库。
+- 已确认本机 SSH 能成功登录 GitHub，但认证账号是 `xioshark0127-afk`。
+- 已创建本地 `main` 基线提交：
+  - `7e768f1 Initial import of RAG QA Bench`
+- 已创建本地证据分支：
+  - `chore/github-pr-acceptance-evidence`
+- 已创建证据分支提交：
+  - `1bf0a55 Add PR acceptance evidence hooks`
+- 证据分支内容：
+  - `README.md` 增加 GitHub PR 验收记录入口，确保 PR comment workflow 有稳定触发面
+  - `app/db/types.py` 增加 `pgvector` comparator 说明性注释，确保主线门禁、迁移门禁和视觉 E2E 都会被触发
+- 已执行 `python3 -m ruff check app`，通过。
+- 用户已为账号 `xioshark0127-afk` 补齐仓库写权限。
+- 已成功推送远端基线：
+  - `origin/main -> 7e768f1`
+- 已成功推送远端证据分支：
+  - `origin/chore/github-pr-acceptance-evidence -> 1bf0a55`
+- 已安装 `gh` CLI：
+  - `gh version 2.88.1 (2026-03-12)`
+- 已完成 GitHub CLI 认证：
+  - `gh auth status` 显示 `github.com account Xio-Shark (keyring)`
+- 已创建真实 PR：
+  - `#1 Add GitHub PR acceptance evidence hooks`
+  - `https://github.com/Xio-Shark/rag/pull/1`
+- 已确认 PR 当前状态：
+  - `state=OPEN`
+  - `mergeStateStatus=UNSTABLE`
+  - `head=chore/github-pr-acceptance-evidence`
+  - `base=main`
+
+## 第一轮真实验收结果
+
+- 通过检查：
+  - `schema-migration-guard`
+    - `https://github.com/Xio-Shark/rag/actions/runs/23112766057/job/67133002740`
+  - `verify-visual-baseline-sync`
+    - `https://github.com/Xio-Shark/rag/actions/runs/23112766049/job/67133002735`
+- 失败检查：
+  - `mainline-quality-gate`
+    - `https://github.com/Xio-Shark/rag/actions/runs/23112766059/job/67133002716`
+  - `visual-regression-e2e`
+    - `https://github.com/Xio-Shark/rag/actions/runs/23112766043/job/67133002757`
+- 已采集 PR bot comments：
+  - visual baseline summary
+    - `https://github.com/Xio-Shark/rag/pull/1#issuecomment-4063160556`
+    - 内容：`No formal visual baseline PNG changes detected.`
+  - visual regression diagnostic
+    - `https://github.com/Xio-Shark/rag/pull/1#issuecomment-4063162103`
+    - 关联 artifact：
+      - JUnit XML：`https://github.com/Xio-Shark/rag/actions/runs/23112766043/artifacts/5932162003`
+      - 失败诊断摘要：`https://github.com/Xio-Shark/rag/actions/runs/23112766043/artifacts/5932162103`
+      - Run：`https://github.com/Xio-Shark/rag/actions/runs/23112766043`
+
+## 失败根因定位
+
+- `mainline-quality-gate` 中的 2 条 watchdog 子进程测试失败并非逻辑回归，而是测试时间写死在 `2026-03-15T01:00:00Z`，真实时钟跨过 `10h` deadline 后自然变为 `deadline_reached`。
+- `mainline-quality-gate` 与 `visual-regression-e2e` 中的 6 条视觉测试失败，都表现为截图高度比基线更小，属于 GitHub Linux runner 和本机字体/排版差异导致的跨平台基线漂移。
+- 当前 `tests/visual_regression.py` 在“尺寸不一致”时直接抛错，不会写出 `.actual.png`，导致第一轮 PR diagnostic comment 只有摘要和 JUnit，没有失败图片。
+
+## 第二轮本地修复
+
+- 已修改 `tests/test_continuous_task_loop.py`
+  - 让 2 条 watchdog 子进程测试使用远未来时间，彻底消除日期依赖。
+- 已修改 `tests/test_e2e_visual_regression.py`
+  - 为实验中心、问答/证据、报告面板截图增加更强的跨平台归一化。
+  - 归一化重点从“保留全部自然文本”调整为“保留结构、控件和核心布局信号”，降低字体差异带来的高度抖动。
+- 已修改 `tests/visual_regression.py`
+  - 让尺寸不一致场景也产出 `.actual.png`，便于下次 GitHub 失败时直接下载真实截图。
+- 已修改 `tests/test_visual_regression.py`
+  - 为尺寸不一致场景补回归测试。
+- 已重建正式基线：
+  - `tests/baselines/experiment-center.png`
+  - `tests/baselines/qa-evidence-workflow.png`
+  - `tests/baselines/report-panel.png`
+  - `tests/baselines/mobile-experiment-center.png`
+  - `tests/baselines/tablet-qa-evidence-workflow.png`
+  - `tests/baselines/tablet-report-panel.png`
+
+## 工具状态
+
+- `gh` CLI：已安装并已登录
+- `git`：已连到真实远端仓库
+- PR 采证链路：已验证 workflow、run、artifact、comment 都能真实落在 GitHub 页面
 
 ## 关键决策
 
 - 优先复用现有 workflow，不新增一次性 workflow。
 - 证据 PR 会包含 `README.md` 最小改动，以稳定触发 PR comment workflow。
+- 对视觉回归采用“更强归一化 + 保持结构信号”的修复路线，而不是单纯放宽 diff 阈值。
+- 对 watchdog 失败采用“修测试时间脆弱性”而不是改运行逻辑，因为真实逻辑与 deadline 语义是一致的。
 
 ## 变更文件
 
-- 待回填。
+- `tests/test_continuous_task_loop.py`
+- `tests/test_e2e_visual_regression.py`
+- `tests/test_visual_regression.py`
+- `tests/visual_regression.py`
+- `tests/baselines/experiment-center.png`
+- `tests/baselines/qa-evidence-workflow.png`
+- `tests/baselines/report-panel.png`
+- `tests/baselines/mobile-experiment-center.png`
+- `tests/baselines/tablet-qa-evidence-workflow.png`
+- `tests/baselines/tablet-report-panel.png`
+- `TASK_LOG.md`
+- `docs/agent-runs/2026-03-15-github-pr-acceptance.md`
 
 ## 风险与未覆盖项
 
-- 若本机缺少 GitHub 认证，可能需要用户先完成一次登录或提供 PAT。
 - 首次导入仓库只能建立基线，不能替代“历史改动当时的原生 PR 记录”。
+- 视觉回归虽然已收敛为更稳定的结构化快照，但仍然依赖真实 GitHub Linux runner 复跑确认。
+- 本地全量 `pytest` 还存在 1 条环境差异失败：
+  - `tests/test_database_compatibility.py::test_embedding_vector_exposes_pgvector_distance_operator`
+  - 当前机器缺少 `pgvector` 包，`importlib.util.find_spec('pgvector') -> None`
+  - 该失败不在 PR `#1` 第一轮 GitHub 失败清单内，因此本轮未把它作为主线修复目标。
+- 目前还没拿到“修复后第二轮 run/comment”的最终 GitHub 证据；需要推送当前修复并等待 PR checks 复跑。
+
+## 本地验证
+
+- `python3 -m pytest -q tests/test_continuous_task_loop.py -k 'check_once_resumes_interrupted_loop_with_fake_codex or watch_mode_emits_progress_report'`
+  - `2 passed`
+- `python3 -m pytest -q tests/test_visual_regression.py`
+  - `6 passed`
+- `UPDATE_VISUAL_BASELINES=1 python3 -m pytest -q tests/test_e2e_visual_regression.py`
+  - `6 passed`
+- `python3 -m ruff check app tests scripts`
+  - 通过
+- `PYTHONPYCACHEPREFIX=/tmp/pycache python3 -m compileall app tests scripts`
+  - 通过
+- `python3 scripts/render_visual_regression_baselines.py --check`
+  - 通过
+- `python3 -m pytest -q`
+  - `113 passed, 1 failed`
+  - 唯一失败为本地 `pgvector` 缺失导致的环境差异项
 
 ## 回滚方式
 
 1. 关闭未合并的证据 PR。
 2. 删除远端证据分支。
-3. 必要时删除仅用于触发验收的最小测试提交。
+3. 回退本轮新增的测试修复、视觉归一化和 6 张基线。
+4. 必要时删除仅用于触发验收的最小测试提交。

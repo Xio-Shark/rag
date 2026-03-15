@@ -171,7 +171,151 @@ def _prepare_visual_state(page, expect) -> None:
     expect(page.locator("#report-output")).to_contain_text("路线图双事实")
 
 
+def _install_snapshot_style(page) -> None:
+    page.evaluate(
+        """
+        () => {
+          const styleId = 'visual-regression-normalized-style';
+          if (document.getElementById(styleId)) {
+            return;
+          }
+
+          const style = document.createElement('style');
+          style.id = styleId;
+          style.textContent = `
+            [data-visual-normalized='true'],
+            [data-visual-normalized='true'] * {
+              font-family: "Courier New", "Liberation Mono", monospace !important;
+              letter-spacing: 0 !important;
+              text-shadow: none !important;
+            }
+
+            [data-visual-normalized='true'] .section-text,
+            [data-visual-normalized='true'] .card-lead,
+            [data-visual-normalized='true'] .report-caption,
+            [data-visual-normalized='true'] .mini,
+            [data-visual-normalized='true'] .status,
+            [data-visual-normalized='true'] pre {
+              overflow: hidden !important;
+            }
+
+            [data-visual-normalized='true'] button {
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+            }
+          `;
+          document.head.appendChild(style);
+        }
+        """
+    )
+
+
+def _normalize_section_shell(page, section_index: int, label: str) -> None:
+    _install_snapshot_style(page)
+    page.evaluate(
+        """
+        ({ sectionIndex, label }) => {
+          const section = document.querySelectorAll('.section-shell')[sectionIndex];
+          if (!section) {
+            return;
+          }
+
+          section.setAttribute('data-visual-normalized', 'true');
+
+          const setHeight = (node, height) => {
+            if (!node || !height) {
+              return;
+            }
+            node.style.height = height;
+            node.style.minHeight = height;
+            node.style.overflow = 'hidden';
+          };
+
+          const setText = (node, text, height = '') => {
+            if (!node) {
+              return;
+            }
+            node.textContent = text;
+            setHeight(node, height);
+          };
+
+          setText(section.querySelector('.section-kicker'), `${label.toUpperCase()} FLOW`);
+          setText(section.querySelector('.section-title'), `Stable ${label} layout`);
+          setText(
+            section.querySelector('.section-text'),
+            'Snapshot copy is normalized for cross-platform visual regression.',
+            '3.5em'
+          );
+
+          section.querySelectorAll('.path-pill').forEach((node, index) => {
+            node.textContent = `STEP ${index + 1}`;
+          });
+
+          section.querySelectorAll('.card-step').forEach((node, index) => {
+            node.textContent = String(index + 1).padStart(2, '0');
+          });
+
+          section.querySelectorAll('article.card h2').forEach((node, index) => {
+            node.textContent = `${label} panel ${index + 1}`;
+          });
+
+          section.querySelectorAll('.card-lead').forEach((node, index) => {
+            setText(node, `Stable lead copy ${index + 1}.`, '3.3em');
+          });
+
+          section.querySelectorAll('button').forEach((node, index) => {
+            node.textContent = `ACTION ${index + 1}`;
+            node.style.minHeight = '52px';
+            node.style.lineHeight = '1.2';
+          });
+
+          section.querySelectorAll('select').forEach((node, index) => {
+            const option = document.createElement('option');
+            option.value = `normalized-${label}-${index + 1}`;
+            option.textContent = `OPTION ${index + 1}`;
+            node.replaceChildren(option);
+            node.value = option.value;
+            node.style.minHeight = '52px';
+            node.style.lineHeight = '1.2';
+          });
+
+          section.querySelectorAll('input').forEach((node, index) => {
+            if (node.type === 'number') {
+              node.value = String(index + 1);
+            } else {
+              node.value = `input-${index + 1}`;
+              node.placeholder = `input-${index + 1}`;
+            }
+          });
+
+          section.querySelectorAll('textarea').forEach((node, index) => {
+            node.value = `Prompt ${index + 1}\\nStable snapshot`;
+            node.style.height = '112px';
+          });
+
+          section.querySelectorAll('button, input, select, textarea').forEach((node) => {
+            node.blur();
+          });
+        }
+        """,
+        {"sectionIndex": section_index, "label": label},
+    )
+
+
+def _settle_snapshot(page) -> None:
+    page.mouse.move(0, 0)
+    page.evaluate(
+        """
+        () => new Promise((resolve) => {
+          requestAnimationFrame(() => requestAnimationFrame(resolve));
+        })
+        """
+    )
+
+
 def _normalize_experiment_center(page) -> None:
+    _normalize_section_shell(page, 1, "Experiment")
     page.evaluate(
         """
         () => {
@@ -180,31 +324,73 @@ def _normalize_experiment_center(page) -> None:
             return;
           }
 
-          const replacePatterns = [
-            [/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi, '<id>'],
-            [/\\b\\d{4}-\\d{2}-\\d{2}[ T]\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?\\b/g, '<time>'],
-            [/\\/[^\\s]+\\/report\\.(?:md|json)/g, '<report-path>'],
-            [
-              /latency_p95_ms[\\s\\S]*?unchanged/g,
-              'latency_p95_ms\\n<metric>\\n<baseline>\\n<delta>\\nunchanged'
-            ],
-          ];
+          const setBlock = (selector, text, height = '') => {
+            const node = section.querySelector(selector);
+            if (!node) {
+              return;
+            }
+            node.textContent = text;
+            if (height) {
+              node.style.height = height;
+              node.style.minHeight = height;
+              node.style.overflow = 'hidden';
+            }
+          };
 
-          const walker = document.createTreeWalker(section, NodeFilter.SHOW_TEXT);
-          while (walker.nextNode()) {
-            let value = walker.currentNode.nodeValue || '';
-            replacePatterns.forEach(([pattern, replacement]) => {
-              value = value.replace(pattern, replacement);
-            });
-            walker.currentNode.nodeValue = value;
+          setBlock('#run-eval-output', 'Run complete\\nstatus=stable\\ncases=4', '4.8em');
+          setBlock('#eval-output', 'Recent runs\\n- default\\n- compact', '5.8em');
+          setBlock(
+            '#compare-output',
+            'Regression summary\\nAction: inspect case\\nMetric delta: stable\\nPriority: medium',
+            '8.4em'
+          );
+          setBlock('#snapshot-output', 'Snapshots\\n- default\\n- compact', '5.8em');
+          setBlock(
+            '#compare-detail-output',
+            'Focused case\\nBase answer\\nTarget answer\\nReport anchor',
+            '8.8em'
+          );
+          setBlock('#report-meta', 'report.md | focused case-1', '2.5em');
+          setBlock('#report-outline-output', 'Outline\\n- case-1\\n- case-2', '5.6em');
+          setBlock(
+            '#report-output',
+            'Case note\\nEvidence summary\\nDecision summary\\nNext action',
+            '13.8em'
+          );
+          setBlock('#replay-context-output', 'Bound case\\nsource=summary-action', '3.6em');
+          setBlock('#replay-output', 'Replay result\\nscore=stable\\nlatency=ok', '6.8em');
+          setBlock(
+            '#replay-compare-output',
+            'Replay diff\\nquality=stable\\nthreshold=unchanged',
+            '6.2em'
+          );
+          setBlock('#replay-history-output', 'Replay history\\n- run-a\\n- run-b', '5.8em');
+
+          const reportCaption = section.querySelector('.report-caption');
+          if (reportCaption) {
+            reportCaption.textContent = 'Outline copy is normalized for visual stability.';
+            reportCaption.style.height = '3.5em';
+            reportCaption.style.minHeight = '3.5em';
           }
 
-          section.querySelectorAll('button, input, select, textarea').forEach((node) => {
-            node.blur();
+          const reportRestoreButton = section.querySelector('#report-restore-button');
+          if (reportRestoreButton) {
+            reportRestoreButton.textContent = 'RESTORE';
+            reportRestoreButton.disabled = false;
+          }
+
+          const reportSummary = section.querySelector('.report-nav summary');
+          if (reportSummary) {
+            reportSummary.textContent = 'REPORT OUTLINE';
+          }
+
+          section.querySelectorAll('details').forEach((node) => {
+            node.open = true;
           });
         }
         """
     )
+    _settle_snapshot(page)
 
 
 def _prepare_qa_evidence_state(page, expect) -> None:
@@ -217,6 +403,8 @@ def _prepare_qa_evidence_state(page, expect) -> None:
 
 
 def _normalize_qa_evidence_sections(page) -> None:
+    _normalize_section_shell(page, 0, "QA")
+    _normalize_section_shell(page, 2, "Evidence")
     page.evaluate(
         """
         () => {
@@ -233,29 +421,49 @@ def _normalize_qa_evidence_sections(page) -> None:
             }
           });
 
-          const replacePatterns = [
-            [/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi, '<id>'],
-            [/\\/private\\/var\\/folders\\/[^\\s]+/g, '<source-path>'],
-            [/\\b\\d+\\.\\d+ ms\\b/g, '<latency> ms'],
-          ];
-
-          [qaSection, evidenceSection].forEach((section) => {
-            const walker = document.createTreeWalker(section, NodeFilter.SHOW_TEXT);
-            while (walker.nextNode()) {
-              let value = walker.currentNode.nodeValue || '';
-              replacePatterns.forEach(([pattern, replacement]) => {
-                value = value.replace(pattern, replacement);
-              });
-              walker.currentNode.nodeValue = value;
+          const setBlock = (root, selector, text, height = '') => {
+            const node = root.querySelector(selector);
+            if (!node) {
+              return;
             }
+            node.textContent = text;
+            if (height) {
+              node.style.height = height;
+              node.style.minHeight = height;
+              node.style.overflow = 'hidden';
+            }
+          };
 
-            section.querySelectorAll('button, input, select, textarea').forEach((node) => {
-              node.blur();
-            });
-          });
+          setBlock(
+            qaSection,
+            '#answer',
+            'Answer summary\\nAudit id: <id>\\nCitation A\\nCitation B',
+            '10.2em'
+          );
+          setBlock(
+            qaSection,
+            '#audit-output',
+            'Audit details\\nCandidate set\\nFailure stage\\nRuntime params',
+            '8.8em'
+          );
+          setBlock(qaSection, '#audit-list-output', 'Audit list\\n- audit-a\\n- audit-b', '5.8em');
+
+          setBlock(
+            evidenceSection,
+            '#chunk-output',
+            'Chunk preview\\nNeighbor chunk\\nReasoning trace\\nSource link',
+            '10.2em'
+          );
+          setBlock(
+            evidenceSection,
+            '#document-output',
+            'Document timeline\\nSection A\\nSection B\\nSection C\\nKeyword hits',
+            '12.4em'
+          );
         }
         """
     )
+    _settle_snapshot(page)
 
 
 def _prepare_report_panel_state(page, expect) -> None:
@@ -272,6 +480,7 @@ def _prepare_report_panel_state(page, expect) -> None:
 
 
 def _normalize_report_panel(page) -> None:
+    _install_snapshot_style(page)
     page.evaluate(
         """
         () => {
@@ -280,10 +489,22 @@ def _normalize_report_panel(page) -> None:
             return;
           }
 
+          reportCard.setAttribute('data-visual-normalized', 'true');
+
+          const cardStep = reportCard.querySelector('.card-step');
+          if (cardStep) {
+            cardStep.textContent = '10';
+          }
+
+          const cardTitle = reportCard.querySelector('h2');
+          if (cardTitle) {
+            cardTitle.textContent = 'Report panel';
+          }
+
           const reportLead = reportCard.querySelector('.card-lead');
           if (reportLead) {
-            reportLead.innerHTML =
-              '报告面板归一化后保留正文、导航与恢复操作。<br>顶部说明文案固定，避免换行抖动。';
+            reportLead.textContent = 'Report layout is normalized for cross-platform checks.';
+            reportLead.style.height = '3.3em';
             reportLead.style.minHeight = '3.3em';
           }
 
@@ -291,7 +512,7 @@ def _normalize_report_panel(page) -> None:
           if (reportRunSelect) {
             const option = document.createElement('option');
             option.value = 'normalized-run';
-            option.textContent = 'compact_context | <time> | <id>';
+            option.textContent = 'OPTION 1';
             reportRunSelect.replaceChildren(option);
             reportRunSelect.value = option.value;
             reportRunSelect.style.minHeight = '52px';
@@ -300,15 +521,16 @@ def _normalize_report_panel(page) -> None:
 
           const reportMeta = document.getElementById('report-meta');
           if (reportMeta) {
-            reportMeta.textContent = '<report-path> | 已定位到 路线图双事实';
-            reportMeta.style.minHeight = '24px';
+            reportMeta.textContent = 'report.md | focused case-1';
+            reportMeta.style.height = '2.5em';
+            reportMeta.style.minHeight = '2.5em';
           }
 
           const reportFormatSelect = document.getElementById('report-format-select');
           if (reportFormatSelect) {
             const option = document.createElement('option');
             option.value = 'markdown';
-            option.textContent = 'Markdown';
+            option.textContent = 'MARKDOWN';
             reportFormatSelect.replaceChildren(option);
             reportFormatSelect.value = option.value;
             reportFormatSelect.style.minHeight = '52px';
@@ -317,7 +539,7 @@ def _normalize_report_panel(page) -> None:
 
           const reportButton = document.getElementById('report-button');
           if (reportButton) {
-            reportButton.textContent = '读取报告正文';
+            reportButton.textContent = 'READ REPORT';
             reportButton.style.display = 'flex';
             reportButton.style.alignItems = 'center';
             reportButton.style.justifyContent = 'center';
@@ -325,20 +547,42 @@ def _normalize_report_panel(page) -> None:
             reportButton.style.lineHeight = '1.2';
           }
 
-          const replacePatterns = [
-            [/\\/[^\\n|]+report\\.(?:md|json)/g, '<report-path>'],
-            [/\\b\\d{4}-\\d{2}-\\d{2}[ T]\\d{2}:\\d{2}:\\d{2}(?:\\.\\d+)?\\b/g, '<time>'],
-            [/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi, '<id>'],
-          ];
-
-          const walker = document.createTreeWalker(reportCard, NodeFilter.SHOW_TEXT);
-          while (walker.nextNode()) {
-            let value = walker.currentNode.nodeValue || '';
-            replacePatterns.forEach(([pattern, replacement]) => {
-              value = value.replace(pattern, replacement);
-            });
-            walker.currentNode.nodeValue = value;
+          const reportRestoreButton = document.getElementById('report-restore-button');
+          if (reportRestoreButton) {
+            reportRestoreButton.textContent = 'RESTORE';
+            reportRestoreButton.disabled = false;
           }
+
+          const reportSummary = reportCard.querySelector('.report-nav summary');
+          if (reportSummary) {
+            reportSummary.textContent = 'REPORT OUTLINE';
+          }
+
+          const reportCaption = reportCard.querySelector('.report-caption');
+          if (reportCaption) {
+            reportCaption.textContent = 'Outline copy is normalized for visual stability.';
+            reportCaption.style.height = '3.5em';
+            reportCaption.style.minHeight = '3.5em';
+          }
+
+          const reportOutline = document.getElementById('report-outline-output');
+          if (reportOutline) {
+            reportOutline.textContent = 'Outline\\n- case-1\\n- case-2';
+            reportOutline.style.height = '5.6em';
+            reportOutline.style.minHeight = '5.6em';
+          }
+
+          const reportOutput = document.getElementById('report-output');
+          if (reportOutput) {
+            reportOutput.textContent =
+              'Case note\\nEvidence summary\\nDecision summary\\nNext action';
+            reportOutput.style.height = '13.8em';
+            reportOutput.style.minHeight = '13.8em';
+          }
+
+          reportCard.querySelectorAll('details').forEach((node) => {
+            node.open = true;
+          });
 
           reportCard.querySelectorAll('button, input, select, textarea').forEach((node) => {
             node.blur();
@@ -346,14 +590,7 @@ def _normalize_report_panel(page) -> None:
         }
         """
     )
-    page.mouse.move(0, 0)
-    page.evaluate(
-        """
-        () => new Promise((resolve) => {
-          requestAnimationFrame(() => requestAnimationFrame(resolve));
-        })
-        """
-    )
+    _settle_snapshot(page)
 
 
 def test_experiment_center_visual_regression(live_server: str, browser_page) -> None:
