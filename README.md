@@ -99,6 +99,7 @@
 - `python3 scripts/continuous_task_loop.py --check-once`：执行一次巡检，适合配合 `cron` / `launchd` 每 30 分钟或 1 小时定时触发自动恢复。
 - `python3 scripts/release_gate.py --phase pre-release --execute`：执行最小发布前 gate，收口迁移、回归、视觉检查和编译校验。
 - `python3 scripts/release_gate.py --phase post-release --base-url http://127.0.0.1:8000 --execute`：执行发布后 smoke check，检查 `/v1/health`、搜索和离线评测链路。
+- `.github/workflows/release-gate.yml`：正式的手动触发 release workflow，复用 `scripts/release_gate.py`，并上传发布计划与执行日志 artifact。
 - `GET /v1/evals/latest` / `GET /v1/evals/runs` / `GET /v1/evals/snapshots` / `GET /v1/evals/datasets` / `GET /v1/evals/compare`：查看最近评测、运行列表、快照列表、数据集列表和回归对比结果。
 - `POST /v1/evals/run` / `GET /v1/evals/{eval_run_id}/report`：通过 HTTP 运行评测并读取报告正文。
 - `POST /v1/evals/replay-experiments` / `GET /v1/evals/replay-experiments` / `GET /v1/evals/replay-experiments/compare`：基于 bad case 创建带快照覆盖参数的回放实验、查看实验记录，并持续对比不同回放方案。
@@ -188,6 +189,14 @@
 ```bash
 python3 scripts/release_gate.py
 ```
+
+如果希望通过 GitHub Actions 手动触发正式 release workflow，可执行：
+
+```bash
+gh workflow run release-gate.yml -f phase=pre-release -f execute=true
+```
+
+如果只是想在 GitHub 上先看 dry-run 计划，把 `execute=true` 改成 `execute=false`；发布后 smoke check 场景再额外传 `-f base_url=http://目标地址`。
 
 执行发布前检查时，优先使用最小 release gate 入口：
 

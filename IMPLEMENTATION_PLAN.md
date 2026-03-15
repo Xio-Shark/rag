@@ -50,23 +50,26 @@
 
 - 已补最小 `scripts/release_gate.py` 入口，统一发布前、发布中、发布后的本地执行口径
 - 已把 release gate 入口同步到 `README.md` 和 `RUNBOOK.md`
-- 剩余重点仍是一次真实 GitHub PR 环境验收
+- 已完成真实 GitHub PR 环境验收
+- 已补正式 `.github/workflows/release-gate.yml` 手动发布 workflow
+- 剩余重点转为一次真实目标环境的 release workflow 演练
 
 目标：
 
-- 在真实 GitHub PR 环境验证视觉回归 comment、artifact、run link 的发布效果
+- 让 release gate 同时具备本地脚本入口和 GitHub Actions workflow 入口
 - 明确 merge gate 与 release gate 的最小集合
-- 把本地验证命令与 CI job 对齐
+- 把本地验证命令与 CI / release workflow 对齐
 
 建议任务：
 
-- 做一次真实 PR 演练
-- 记录一次从失败到恢复的 comment 生命周期截图或结果摘要
+- 在真实目标环境执行一次 `release-gate.yml`，至少覆盖 `pre-release` 或 `post-release`
+- 记录一次 workflow artifact、summary 和执行日志的验收结果
 - 视需要补 `pytest -m e2e` 专用 workflow 摘要，进一步压缩主 gate 与专项 gate 的职责边界
 
 验收：
 
 - 至少一次真实 PR 运行被人工验收
+- 至少存在正式 release workflow，可由 GitHub Actions 手动触发
 - runbook 中的发布检查项可被实际执行
 
 ### M3. 数据与 schema 治理

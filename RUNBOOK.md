@@ -236,6 +236,20 @@ python3 scripts/release_gate.py
 
 默认只做 dry-run，输出发布前、发布中、发布后的阶段和命令，不实际执行。
 
+如果希望把同一套 release gate 放到 GitHub Actions 中手动触发，当前已经有正式 workflow：
+
+```bash
+gh workflow run release-gate.yml -f phase=pre-release -f execute=true
+```
+
+补充说明：
+
+- `.github/workflows/release-gate.yml` 会复用 `scripts/release_gate.py`
+- workflow 会始终上传 `release-gate-plan` artifact
+- 当 `execute=true` 时，还会额外上传 `release-gate-execution-log` artifact
+- 如果只想先在 GitHub 上看 dry-run 计划，把 `execute=true` 改成 `execute=false`
+- `post-release` 阶段需要配合 `-f base_url=http://目标地址` 指向真实环境
+
 ### 5.1 发布前
 
 发布前 gate 建议直接执行：
@@ -260,6 +274,7 @@ python3 scripts/release_gate.py --phase pre-release --execute
 - `.github/workflows/mainline-quality-gate.yml` 会持续执行 `python -m ruff check app tests scripts`、`python -m pytest -q` 和 `python -m compileall app tests scripts`
 - `.github/workflows/schema-migration-guard.yml` 负责独立的迁移漂移门禁
 - `.github/workflows/visual-baseline-sync.yml` 与 `.github/workflows/visual-regression-e2e.yml` 继续负责视觉基线同步、视觉诊断和 PR comment
+- `.github/workflows/release-gate.yml` 提供正式的手动 release workflow，适合保留 dry-run / execute 记录和 artifact
 
 其中 `tests/test_database_migrations.py` 会同时验证：
 

@@ -20,3 +20,4 @@ def test_mainline_quality_gate_workflow_covers_core_checks() -> None:
     assert '"tests/**"' in workflow_text
     assert '"app/**"' in workflow_text
     assert '"scripts/**"' in workflow_text
+    assert '".github/workflows/release-gate.yml"' in workflow_text

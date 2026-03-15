@@ -1,0 +1,120 @@
+name: Release Gate
+
+permissions:
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: "选择要运行的 release gate 阶段"
+        required: true
+        type: choice
+        default: pre-release
+        options:
+          - pre-release
+          - release
+          - post-release
+          - all
+      execute:
+        description: "是否实际执行命令；关闭时只输出 dry-run 计划"
+        required: true
+        type: boolean
+        default: false
+      base_url:
+        description: "post-release 健康检查使用的服务地址"
+        required: false
+        type: string
+        default: http://127.0.0.1:8000
+
+jobs:
+  release-gate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Install Chromium
+        if: ${{ inputs.execute && (inputs.phase == 'pre-release' || inputs.phase == 'all') }}
+        run: python -m playwright install --with-deps chromium
+
+      - name: Render release gate plan
+        id: render_plan
+        env:
+          PHASE: ${{ inputs.phase }}
+          BASE_URL: ${{ inputs.base_url }}
+        run: |
+          phase_args=()
+          if [ "$PHASE" != "all" ]; then
+            phase_args+=(--phase "$PHASE")
+          fi
+
+          plan_path="$RUNNER_TEMP/release-gate-plan.txt"
+          python3 scripts/release_gate.py "${phase_args[@]}" --base-url "$BASE_URL" | tee "$plan_path"
+          echo "plan_path=$plan_path" >> "$GITHUB_OUTPUT"
+
+          if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+            {
+              echo "## Release Gate Plan"
+              echo
+              echo '```text'
+              cat "$plan_path"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Execute release gate
+        if: ${{ inputs.execute }}
+        id: execute_gate
+        env:
+          PHASE: ${{ inputs.phase }}
+          BASE_URL: ${{ inputs.base_url }}
+        run: |
+          phase_args=()
+          if [ "$PHASE" != "all" ]; then
+            phase_args+=(--phase "$PHASE")
+          fi
+
+          log_path="$RUNNER_TEMP/release-gate-execute.log"
+          python3 scripts/release_gate.py "${phase_args[@]}" --base-url "$BASE_URL" --execute | tee "$log_path"
+          echo "log_path=$log_path" >> "$GITHUB_OUTPUT"
+
+          if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+            {
+              echo
+              echo "## Release Gate Execute Log"
+              echo
+              echo '```text'
+              cat "$log_path"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload release gate plan
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-gate-plan
+          path: ${{ steps.render_plan.outputs.plan_path }}
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Upload release gate execution log
+        if: ${{ inputs.execute }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-gate-execution-log
+          path: ${{ steps.execute_gate.outputs.log_path }}
+          if-no-files-found: error
+          retention-days: 7

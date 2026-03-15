@@ -523,3 +523,38 @@
   - 回退 `tests/test_database_compatibility.py`
   - 删除 `docs/agent-runs/2026-03-16-pgvector-environment-compat.md`
   - 回退 `TASK_LOG.md` 本节
+
+## 2026-03-16 Release Workflow 收口
+
+- 任务类型：发布治理 / CI-CD 收口
+- 项目分类：C 成熟项目优化 / 重构（Demo 工程的正式 release workflow 增量补齐）
+- 风险分级：R3
+- 风险依据：本轮会新增 GitHub Actions workflow，并同步发布相关文档和测试口径
+- 目标：
+  - 把 `scripts/release_gate.py` 收口成正式的 GitHub Actions release workflow
+  - 让 release gate 有统一的手动触发入口与执行记录
+- 仓库探测结论：
+  - 已存在：`scripts/release_gate.py`、`tests/test_release_gate.py`、`README.md`、`RUNBOOK.md`、`IMPLEMENTATION_PLAN.md`、mainline/visual/schema 等专项 workflow
+  - 缺失：正式 release workflow / release pipeline
+  - 本轮必须先补齐：release workflow、对应测试和文档同步
+- 方案结论：
+  - 采用手动触发的 `.github/workflows/release-gate.yml`
+  - 复用 `scripts/release_gate.py`，统一本地脚本和 GitHub Actions 的发布口径
+- 实现结果：
+  - 新增 `.github/workflows/release-gate.yml`
+  - workflow 支持 `phase`、`execute`、`base_url` 输入，并上传 `release-gate-plan` / `release-gate-execution-log` artifact
+  - 更新 `.github/workflows/mainline-quality-gate.yml`，让 release workflow 文件变更也能触发主线质量门禁
+  - 新增 `tests/test_release_workflow.py`
+  - 更新 `README.md`、`RUNBOOK.md`、`IMPLEMENTATION_PLAN.md`
+- 验证结果：
+  - `python3 -m pytest -q tests/test_release_workflow.py tests/test_release_gate.py tests/test_ci_quality_gate.py`：`8 passed`
+  - `python3 -m ruff check tests/test_release_workflow.py tests/test_release_gate.py tests/test_ci_quality_gate.py`：通过
+  - `PYTHONPYCACHEPREFIX=/tmp/pycache python3 -m compileall tests/test_release_workflow.py tests/test_release_gate.py tests/test_ci_quality_gate.py scripts/release_gate.py`：通过
+  - `python3 -m pytest -q`：`110 passed, 7 skipped, 2 warnings`
+- 风险与未覆盖项：
+  - 仍未在真实目标环境执行 `release` / `post-release` 的 execute 演练
+  - 当前补的是正式 workflow 入口，不等于已经具备完整生产发布编排
+- 回滚说明：
+  - 删除 `.github/workflows/release-gate.yml`
+  - 回退 `.github/workflows/mainline-quality-gate.yml`
+  - 回退新增测试和文档同步
