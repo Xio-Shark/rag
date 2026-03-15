@@ -2,6 +2,7 @@
 
 这份文档只记录当前工作区里真实存在的视觉回归资产，避免把正式基线、失败诊断产物和更新命令混在一起。
 机器可校验的事实源在 `tests/baselines/manifest.json`，新增或调整正式基线时，应该先更新这份 manifest，再同步这份 Markdown 清单和 README。
+正式基线当前以 GitHub Actions 的 Linux 渲染结果为准；非 Linux 本机默认跳过 `tests/test_e2e_visual_regression.py`，如需强制执行，可设置 `ALLOW_NON_LINUX_VISUAL_REGRESSION=1`。
 如需重建本文，可执行 `python3 scripts/render_visual_regression_baselines.py --write`。
 如果仓库托管到 GitHub，`.github/workflows/visual-baseline-sync.yml` 也会自动检查 manifest、本文以及 `app/tests` 轻量 lint 是否保持通过。
 如需快速查看某张基线对应的测试、视口和覆盖链路，可执行 `python3 scripts/render_visual_regression_baselines.py --summary --path tests/baselines/report-panel.png`。
@@ -53,6 +54,12 @@
 
 ```bash
 UPDATE_VISUAL_BASELINES=1 python3 -m pytest -q tests/test_e2e_visual_regression.py
+```
+
+如果当前机器不是 Linux，还需要显式加上：
+
+```bash
+ALLOW_NON_LINUX_VISUAL_REGRESSION=1 UPDATE_VISUAL_BASELINES=1 python3 -m pytest -q tests/test_e2e_visual_regression.py
 ```
 
 如果只想更新单条基线，优先使用 `-k` 限定到具体测试函数。

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import os
 import socket
+import sys
 import threading
 import time
 from pathlib import Path
@@ -13,6 +15,19 @@ import uvicorn
 from tests.visual_regression import assert_visual_match, stack_images_vertically
 
 pytestmark = pytest.mark.e2e
+if (
+    not sys.platform.startswith("linux")
+    and os.getenv("ALLOW_NON_LINUX_VISUAL_REGRESSION") != "1"
+):
+    pytestmark = [
+        pytest.mark.e2e,
+        pytest.mark.skip(
+            reason=(
+                "视觉基线当前以 GitHub Actions Linux 环境为准；"
+                "如需在非 Linux 本机强制执行，请设置 ALLOW_NON_LINUX_VISUAL_REGRESSION=1。"
+            )
+        ),
+    ]
 
 
 def _pick_free_port() -> int:
@@ -191,6 +206,27 @@ def _install_snapshot_style(page) -> None:
               caret-color: transparent !important;
             }
 
+            [data-visual-normalized='true'],
+            [data-visual-normalized='true'] .card,
+            [data-visual-normalized='true'] .path-pill,
+            [data-visual-normalized='true'] button,
+            [data-visual-normalized='true'] input,
+            [data-visual-normalized='true'] select,
+            [data-visual-normalized='true'] textarea,
+            [data-visual-normalized='true'] details,
+            [data-visual-normalized='true'] summary,
+            [data-visual-normalized='true'] pre {
+              box-shadow: none !important;
+              backdrop-filter: none !important;
+              -webkit-backdrop-filter: none !important;
+              filter: none !important;
+              background-image: none !important;
+            }
+
+            [data-visual-normalized='true'] .card {
+              background: rgba(255, 255, 255, 1) !important;
+            }
+
             [data-visual-normalized='true'] .section-text,
             [data-visual-normalized='true'] .card-lead,
             [data-visual-normalized='true'] .report-caption,
@@ -346,6 +382,9 @@ def _normalize_experiment_center(page) -> None:
     page.evaluate(
         """
         () => {
+          document.body.style.background = 'rgb(242, 239, 232)';
+          document.body.style.backgroundImage = 'none';
+
           const section = document.querySelectorAll('.section-shell')[1];
           if (!section) {
             return;
@@ -432,6 +471,9 @@ def _normalize_qa_evidence_sections(page) -> None:
     page.evaluate(
         """
         () => {
+          document.body.style.background = 'rgb(242, 239, 232)';
+          document.body.style.backgroundImage = 'none';
+
           const qaSection = document.querySelectorAll('.section-shell')[0];
           const evidenceSection = document.querySelectorAll('.section-shell')[2];
           if (!qaSection || !evidenceSection) {
@@ -493,6 +535,9 @@ def _normalize_report_panel(page) -> None:
     page.evaluate(
         """
         () => {
+          document.body.style.background = 'rgb(242, 239, 232)';
+          document.body.style.backgroundImage = 'none';
+
           const reportCard = document.querySelector('article.card.card-sticky');
           if (!reportCard) {
             return;

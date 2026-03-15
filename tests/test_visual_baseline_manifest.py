@@ -65,11 +65,14 @@ def test_visual_baseline_manifest_matches_docs_and_readme() -> None:
     doc_text = DOC_PATH.read_text(encoding="utf-8")
     e2e_test_text = E2E_TEST_PATH.read_text(encoding="utf-8")
 
-    assert f"当前已补 {len(formal_entries)} 条本地视觉回归测试" in readme_text
+    assert f"当前已补 {len(formal_entries)} 条视觉回归测试" in readme_text
     assert "docs/visual-regression-baselines.md" in readme_text
     assert "tests/baselines/manifest.json" in doc_text
     assert ".github/workflows/visual-regression-e2e.yml" in readme_text
     assert ".github/workflows/visual-regression-e2e.yml" in doc_text
+    assert "ALLOW_NON_LINUX_VISUAL_REGRESSION=1" in readme_text
+    assert "ALLOW_NON_LINUX_VISUAL_REGRESSION=1" in doc_text
+    assert "ALLOW_NON_LINUX_VISUAL_REGRESSION" in e2e_test_text
 
     for entry in formal_entries:
         baseline_name = Path(entry["path"]).name

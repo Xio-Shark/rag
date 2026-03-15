@@ -98,6 +98,11 @@ def render_markdown_document(manifest: dict) -> str:
             "应该先更新这份 manifest，再同步这份 Markdown 清单和 README。"
         ),
         (
+            "正式基线当前以 GitHub Actions 的 Linux 渲染结果为准；非 Linux 本机默认跳过 "
+            "`tests/test_e2e_visual_regression.py`，如需强制执行，可设置 "
+            "`ALLOW_NON_LINUX_VISUAL_REGRESSION=1`。"
+        ),
+        (
             "如需重建本文，可执行 "
             "`python3 scripts/render_visual_regression_baselines.py --write`。"
         ),
@@ -212,6 +217,15 @@ def render_markdown_document(manifest: dict) -> str:
             "",
             "```bash",
             "UPDATE_VISUAL_BASELINES=1 python3 -m pytest -q tests/test_e2e_visual_regression.py",
+            "```",
+            "",
+            "如果当前机器不是 Linux，还需要显式加上：",
+            "",
+            "```bash",
+            (
+                "ALLOW_NON_LINUX_VISUAL_REGRESSION=1 UPDATE_VISUAL_BASELINES=1 "
+                "python3 -m pytest -q tests/test_e2e_visual_regression.py"
+            ),
             "```",
             "",
             "如果只想更新单条基线，优先使用 `-k` 限定到具体测试函数。",
