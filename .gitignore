@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+*.db
+tests/baselines/*.actual.png
+tests/baselines/*.diff.png
+output/
+output/agent-loop/
