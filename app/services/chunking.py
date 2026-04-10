@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from typing import Any
 
 HEADING_PATTERN = re.compile(r"^(#{1,6})\s+(.*)$")
 
@@ -12,7 +13,7 @@ class ChunkDraft:
     title_path: str
     text: str
     char_count: int
-    metadata: dict[str, str]
+    metadata: dict[str, Any]
 
 
 def split_markdown_blocks(content: str) -> list[tuple[str, str]]:
@@ -50,19 +51,27 @@ def split_text_blocks(content: str) -> list[tuple[str, str]]:
     return [("", paragraph) for paragraph in paragraphs] or [("", content.strip())]
 
 
-def window_text(block_text: str, chunk_size: int, overlap: int) -> list[str]:
+def window_text(
+    block_text: str,
+    chunk_size: int,
+    overlap: int,
+) -> list[tuple[str, int, int]]:
     normalized = re.sub(r"\n{3,}", "\n\n", block_text).strip()
     if len(normalized) <= chunk_size:
-        return [normalized]
+        return [(normalized, 0, len(normalized))]
 
-    windows: list[str] = []
+    windows: list[tuple[str, int, int]] = []
     start = 0
     step = max(chunk_size - overlap, 1)
     while start < len(normalized):
         end = min(start + chunk_size, len(normalized))
         fragment = normalized[start:end].strip()
         if fragment:
-            windows.append(fragment)
+            fragment_start = normalized.find(fragment, start, end)
+            if fragment_start < 0:
+                fragment_start = start
+            fragment_end = fragment_start + len(fragment)
+            windows.append((fragment, fragment_start, fragment_end))
         if end >= len(normalized):
             break
         start += step
@@ -80,7 +89,11 @@ def build_chunks(content: str, file_type: str, chunk_size: int, overlap: int) ->
     drafts: list[ChunkDraft] = []
     sequence = 0
     for title_path, block_text in blocks:
-        for fragment in window_text(block_text, chunk_size=chunk_size, overlap=overlap):
+        for fragment, start, end in window_text(
+            block_text,
+            chunk_size=chunk_size,
+            overlap=overlap,
+        ):
             sequence += 1
             drafts.append(
                 ChunkDraft(
@@ -88,7 +101,13 @@ def build_chunks(content: str, file_type: str, chunk_size: int, overlap: int) ->
                     title_path=title_path,
                     text=fragment,
                     char_count=len(fragment),
-                    metadata={"title_path": title_path},
+                    metadata={
+                        "heading_path": title_path,
+                        "position": {
+                            "start": start,
+                            "end": end,
+                        },
+                    },
                 )
             )
     return drafts

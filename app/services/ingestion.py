@@ -137,7 +137,10 @@ class DocumentIngestionService:
                 title_path=draft.title_path,
                 text=draft.text,
                 char_count=draft.char_count,
-                metadata_json=draft.metadata,
+                metadata_json={
+                    **draft.metadata,
+                    "source_file": str(resolved),
+                },
                 embedding=embedding,
             )
             for draft, embedding in zip(chunk_drafts, embeddings)
