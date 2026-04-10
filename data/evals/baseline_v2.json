@@ -1,0 +1,845 @@
+{
+  "dataset_name": "baseline_v2",
+  "cases": [
+    {
+      "name": "公开语料-001-荣威D7",
+      "query": "荣威D7是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-001-荣威D7.md"
+      ],
+      "expected_keywords": [
+        "荣威D7"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-002-泰安服務區",
+      "query": "请介绍一下泰安服務區。",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-002-泰安服務區-(臺灣).md"
+      ],
+      "expected_keywords": [
+        "泰安服務區"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-003-奥拉杜尔",
+      "query": "奥拉杜尔主要讲的是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-003-奥拉杜尔-(康塔尔省).md"
+      ],
+      "expected_keywords": [
+        "奥拉杜尔"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-004-彼得·威廉·科萨尔",
+      "query": "彼得·威廉·科萨尔是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-004-彼得·威廉·科萨尔.md"
+      ],
+      "expected_keywords": [
+        "彼得·威廉·科萨尔"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-005-圣安蒂莫",
+      "query": "请介绍一下圣安蒂莫。",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-005-圣安蒂莫.md"
+      ],
+      "expected_keywords": [
+        "圣安蒂莫"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-006-慢病毒屬",
+      "query": "慢病毒屬主要讲的是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-006-慢病毒屬.md"
+      ],
+      "expected_keywords": [
+        "慢病毒屬"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-007-墨爾本路面電車",
+      "query": "墨爾本路面電車是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-007-墨爾本路面電車.md"
+      ],
+      "expected_keywords": [
+        "墨爾本路面電車"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-008-巴黎第五大学",
+      "query": "请介绍一下巴黎第五大学。",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-008-巴黎第五大学.md"
+      ],
+      "expected_keywords": [
+        "巴黎第五大学"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-009-连二磷酸",
+      "query": "连二磷酸主要讲的是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-009-连二磷酸.md"
+      ],
+      "expected_keywords": [
+        "连二磷酸"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-010-大气科学",
+      "query": "大气科学是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-010-大气科学.md"
+      ],
+      "expected_keywords": [
+        "大气科学"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-011-北千里站",
+      "query": "请介绍一下北千里站。",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-011-北千里站.md"
+      ],
+      "expected_keywords": [
+        "北千里站"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-012-羊毛衫",
+      "query": "羊毛衫主要讲的是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-012-羊毛衫-(歌曲).md"
+      ],
+      "expected_keywords": [
+        "羊毛衫"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-013-四氟化硒",
+      "query": "四氟化硒是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-013-四氟化硒.md"
+      ],
+      "expected_keywords": [
+        "四氟化硒"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-014-1,3-二溴苯",
+      "query": "请介绍一下1,3-二溴苯。",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-014-1,3-二溴苯.md"
+      ],
+      "expected_keywords": [
+        "1,3-二溴苯"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-015-Ruby on Rails",
+      "query": "Ruby on Rails主要讲的是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-015-Ruby-on-Rails.md"
+      ],
+      "expected_keywords": [
+        "Ruby on Rails"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-016-道格拉斯-查尔斯机场",
+      "query": "道格拉斯-查尔斯机场是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-016-道格拉斯-查尔斯机场.md"
+      ],
+      "expected_keywords": [
+        "道格拉斯-查尔斯机场"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-017-凯莉·库柯",
+      "query": "请介绍一下凯莉·库柯。",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-017-凯莉·库柯.md"
+      ],
+      "expected_keywords": [
+        "凯莉·库柯"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-018-北地群岛",
+      "query": "北地群岛主要讲的是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-018-北地群岛.md"
+      ],
+      "expected_keywords": [
+        "北地群岛"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-019-宮本浩次",
+      "query": "宮本浩次是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-019-宮本浩次.md"
+      ],
+      "expected_keywords": [
+        "宮本浩次"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-020-內瑟爾巴赫河",
+      "query": "请介绍一下內瑟爾巴赫河。",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-020-內瑟爾巴赫河-(萊內河支流).md"
+      ],
+      "expected_keywords": [
+        "內瑟爾巴赫河"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-021-瑟梅爾帕盧",
+      "query": "瑟梅爾帕盧主要讲的是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-021-瑟梅爾帕盧.md"
+      ],
+      "expected_keywords": [
+        "瑟梅爾帕盧"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-022-邦塔尤-塞雷",
+      "query": "邦塔尤-塞雷是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-022-邦塔尤-塞雷.md"
+      ],
+      "expected_keywords": [
+        "邦塔尤-塞雷"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-023-阿列克西·列茲尼科夫",
+      "query": "请介绍一下阿列克西·列茲尼科夫。",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-023-阿列克西·列茲尼科夫.md"
+      ],
+      "expected_keywords": [
+        "阿列克西·列茲尼科夫"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-024-上海延安饭店",
+      "query": "上海延安饭店主要讲的是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-024-上海延安饭店.md"
+      ],
+      "expected_keywords": [
+        "上海延安饭店"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-025-全南县",
+      "query": "全南县是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-025-全南县.md"
+      ],
+      "expected_keywords": [
+        "全南县"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-026-斯特莫爾城堡",
+      "query": "请介绍一下斯特莫爾城堡。",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-026-斯特莫爾城堡.md"
+      ],
+      "expected_keywords": [
+        "斯特莫爾城堡"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-027-楠代德",
+      "query": "楠代德主要讲的是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-027-楠代德.md"
+      ],
+      "expected_keywords": [
+        "楠代德"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-028-1988年美国总统选举",
+      "query": "1988年美国总统选举是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-028-1988年美国总统选举.md"
+      ],
+      "expected_keywords": [
+        "1988年美国总统选举"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-029-白俄罗斯在欧洲歌唱大赛之历年表现",
+      "query": "请介绍一下白俄罗斯在欧洲歌唱大赛之历年表现。",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-029-白俄罗斯在欧洲歌唱大赛之历年表现.md"
+      ],
+      "expected_keywords": [
+        "白俄罗斯在欧洲歌唱大赛之历年表现"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-030-里约狂欢节",
+      "query": "里约狂欢节主要讲的是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-030-里约狂欢节.md"
+      ],
+      "expected_keywords": [
+        "里约狂欢节"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-031-水蛇座",
+      "query": "水蛇座是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-031-水蛇座.md"
+      ],
+      "expected_keywords": [
+        "水蛇座"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-032-马云",
+      "query": "请介绍一下马云。",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-032-马云.md"
+      ],
+      "expected_keywords": [
+        "马云"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-033-陳永康",
+      "query": "陳永康主要讲的是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-033-陳永康-(軍人).md"
+      ],
+      "expected_keywords": [
+        "陳永康"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-034-聖公會呂明才中學",
+      "query": "聖公會呂明才中學是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-034-聖公會呂明才中學.md"
+      ],
+      "expected_keywords": [
+        "聖公會呂明才中學"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-035-右艾夫他滨",
+      "query": "请介绍一下右艾夫他滨。",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-035-右艾夫他滨.md"
+      ],
+      "expected_keywords": [
+        "右艾夫他滨"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-036-弗朗西斯·克利夫兰",
+      "query": "弗朗西斯·克利夫兰主要讲的是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-036-弗朗西斯·克利夫兰.md"
+      ],
+      "expected_keywords": [
+        "弗朗西斯·克利夫兰"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-037-米丽娅姆·马约尔加",
+      "query": "米丽娅姆·马约尔加是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-037-米丽娅姆·马约尔加.md"
+      ],
+      "expected_keywords": [
+        "米丽娅姆·马约尔加"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-038-尤哈·瓦伊尼奥",
+      "query": "请介绍一下尤哈·瓦伊尼奥。",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-038-尤哈·瓦伊尼奥.md"
+      ],
+      "expected_keywords": [
+        "尤哈·瓦伊尼奥"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-039-阿薩姆-烏爾-哈克·奎雷西",
+      "query": "阿薩姆-烏爾-哈克·奎雷西主要讲的是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-039-阿薩姆-烏爾-哈克·奎雷西.md"
+      ],
+      "expected_keywords": [
+        "阿薩姆-烏爾-哈克·奎雷西"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-040-脫氧胞苷二磷酸",
+      "query": "脫氧胞苷二磷酸是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-040-脫氧胞苷二磷酸.md"
+      ],
+      "expected_keywords": [
+        "脫氧胞苷二磷酸"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-041-中美洲联邦",
+      "query": "请介绍一下中美洲联邦。",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-041-中美洲联邦.md"
+      ],
+      "expected_keywords": [
+        "中美洲联邦"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-042-米哈伊尔·斯科平-舒伊斯基",
+      "query": "米哈伊尔·斯科平-舒伊斯基主要讲的是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-042-米哈伊尔·斯科平-舒伊斯基.md"
+      ],
+      "expected_keywords": [
+        "米哈伊尔·斯科平-舒伊斯基"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-043-冯慧兰",
+      "query": "冯慧兰是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-043-冯慧兰.md"
+      ],
+      "expected_keywords": [
+        "冯慧兰"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-044-U-5TS坦克炮",
+      "query": "请介绍一下U-5TS坦克炮。",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-044-U-5TS坦克炮.md"
+      ],
+      "expected_keywords": [
+        "U-5TS坦克炮"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-045-高雄地理",
+      "query": "高雄地理主要讲的是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-045-高雄地理.md"
+      ],
+      "expected_keywords": [
+        "高雄地理"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-046-2019年4月西班牙大選",
+      "query": "2019年4月西班牙大選是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-046-2019年4月西班牙大選.md"
+      ],
+      "expected_keywords": [
+        "2019年4月西班牙大選"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-047-倫敦交通局",
+      "query": "请介绍一下倫敦交通局。",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-047-倫敦交通局.md"
+      ],
+      "expected_keywords": [
+        "倫敦交通局"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-048-重爪龍屬",
+      "query": "重爪龍屬主要讲的是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-048-重爪龍屬.md"
+      ],
+      "expected_keywords": [
+        "重爪龍屬"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-049-齐鲁大学",
+      "query": "齐鲁大学是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-049-齐鲁大学.md"
+      ],
+      "expected_keywords": [
+        "齐鲁大学"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-050-梅西赫帕夏",
+      "query": "请介绍一下梅西赫帕夏。",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-050-梅西赫帕夏.md"
+      ],
+      "expected_keywords": [
+        "梅西赫帕夏"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-051-布兰科·茨韦特科维奇",
+      "query": "布兰科·茨韦特科维奇主要讲的是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-051-布兰科·茨韦特科维奇.md"
+      ],
+      "expected_keywords": [
+        "布兰科·茨韦特科维奇"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-052-袋貂科",
+      "query": "袋貂科是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-052-袋貂科.md"
+      ],
+      "expected_keywords": [
+        "袋貂科"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-053-213省道",
+      "query": "请介绍一下213省道。",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-053-213省道-(福建省).md"
+      ],
+      "expected_keywords": [
+        "213省道"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-054-艾森施泰因山",
+      "query": "艾森施泰因山主要讲的是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-054-艾森施泰因山-(阿爾卑斯山脈).md"
+      ],
+      "expected_keywords": [
+        "艾森施泰因山"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-055-无诸",
+      "query": "无诸是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-055-无诸.md"
+      ],
+      "expected_keywords": [
+        "无诸"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-056-新阿斯卡尼亚",
+      "query": "请介绍一下新阿斯卡尼亚。",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-056-新阿斯卡尼亚.md"
+      ],
+      "expected_keywords": [
+        "新阿斯卡尼亚"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-057-安土桃山时代",
+      "query": "安土桃山时代主要讲的是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-057-安土桃山时代.md"
+      ],
+      "expected_keywords": [
+        "安土桃山时代"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-058-中国无忧花",
+      "query": "中国无忧花是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-058-中国无忧花.md"
+      ],
+      "expected_keywords": [
+        "中国无忧花"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-059-樱花的花瓣们",
+      "query": "请介绍一下樱花的花瓣们。",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-059-樱花的花瓣们.md"
+      ],
+      "expected_keywords": [
+        "樱花的花瓣们"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "公开语料-060-靖康稗史",
+      "query": "靖康稗史主要讲的是什么？",
+      "should_refuse": false,
+      "expected_source_paths": [
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/wiki_public_zh/wiki-060-靖康稗史.md"
+      ],
+      "expected_keywords": [
+        "靖康稗史"
+      ],
+      "forbidden_terms": []
+    },
+    {
+      "name": "拒答样例-01",
+      "query": "月球披萨税率引擎是什么？",
+      "should_refuse": true,
+      "expected_source_paths": [],
+      "expected_keywords": [],
+      "forbidden_terms": [
+        "支持",
+        "已经实现",
+        "可以做到"
+      ]
+    },
+    {
+      "name": "拒答样例-02",
+      "query": "火星茶叶交易局的 API 规范是什么？",
+      "should_refuse": true,
+      "expected_source_paths": [],
+      "expected_keywords": [],
+      "forbidden_terms": [
+        "支持",
+        "已经实现",
+        "可以做到"
+      ]
+    },
+    {
+      "name": "拒答样例-03",
+      "query": "量子奶茶编排平台支持哪些核心能力？",
+      "should_refuse": true,
+      "expected_source_paths": [],
+      "expected_keywords": [],
+      "forbidden_terms": [
+        "支持",
+        "已经实现",
+        "可以做到"
+      ]
+    },
+    {
+      "name": "拒答样例-04",
+      "query": "深海猫语检索框架的路线图是什么？",
+      "should_refuse": true,
+      "expected_source_paths": [],
+      "expected_keywords": [],
+      "forbidden_terms": [
+        "支持",
+        "已经实现",
+        "可以做到"
+      ]
+    },
+    {
+      "name": "拒答样例-05",
+      "query": "虚构星际报销系统如何做回归评测？",
+      "should_refuse": true,
+      "expected_source_paths": [],
+      "expected_keywords": [],
+      "forbidden_terms": [
+        "支持",
+        "已经实现",
+        "可以做到"
+      ]
+    },
+    {
+      "name": "拒答样例-06",
+      "query": "银河快递龙虾引擎支持图像生成吗？",
+      "should_refuse": true,
+      "expected_source_paths": [],
+      "expected_keywords": [],
+      "forbidden_terms": [
+        "支持",
+        "已经实现",
+        "可以做到"
+      ]
+    },
+    {
+      "name": "拒答样例-07",
+      "query": "木星简历蒸馏服务的数据库结构是什么？",
+      "should_refuse": true,
+      "expected_source_paths": [],
+      "expected_keywords": [],
+      "forbidden_terms": [
+        "支持",
+        "已经实现",
+        "可以做到"
+      ]
+    },
+    {
+      "name": "拒答样例-08",
+      "query": "土星诗歌向量农场如何部署 pgvector？",
+      "should_refuse": true,
+      "expected_source_paths": [],
+      "expected_keywords": [],
+      "forbidden_terms": [
+        "支持",
+        "已经实现",
+        "可以做到"
+      ]
+    },
+    {
+      "name": "拒答样例-09",
+      "query": "平行宇宙发票搜索器的评测指标有哪些？",
+      "should_refuse": true,
+      "expected_source_paths": [],
+      "expected_keywords": [],
+      "forbidden_terms": [
+        "支持",
+        "已经实现",
+        "可以做到"
+      ]
+    },
+    {
+      "name": "拒答样例-10",
+      "query": "空气炒饭知识库的 bad case 回放怎么做？",
+      "should_refuse": true,
+      "expected_source_paths": [],
+      "expected_keywords": [],
+      "forbidden_terms": [
+        "支持",
+        "已经实现",
+        "可以做到"
+      ]
+    }
+  ]
+}
