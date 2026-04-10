@@ -11,6 +11,7 @@
 这条 workflow 失败时，还会把诊断图关联回正式基线、视口、覆盖链路和测试名，并写入 job summary。
 对于同仓库 PR，这段失败诊断摘要也会被更新到固定 PR comment；fork PR 会跳过评论步骤。
 这条 workflow 还会上传 `pytest` 生成的 JUnit XML，以及失败诊断摘要 markdown 文件本身，便于离开 GitHub UI 后继续复用。
+当前正式基线采用“Linux 通用基线 + macOS 专用基线”并存策略：默认 `*.png` 作为 CI / Linux 基线，macOS 本地回归优先读取 `*.darwin.png`。
 对于同仓库 PR，失败 comment 现在还会带上这些 artifact 的可点击链接，方便直接跳到 JUnit、摘要或诊断图下载页。
 当后续运行恢复通过时，这条固定失败 comment 会自动更新为“已恢复通过”，避免 PR 页面残留过期告警。
 失败或恢复 comment 现在还会带上本次 GitHub Actions run 的直达链接和 run 编号，方便 reviewer 直接跳转到对应构建。
@@ -19,12 +20,18 @@
 
 | 基线文件 | 视口 | 覆盖链路 | 对应测试 |
 | --- | --- | --- | --- |
-| `tests/baselines/experiment-center.png` | `桌面 1440x2200` | 实验中心摘要、回归钻取、报告联动 | `test_experiment_center_visual_regression` |
-| `tests/baselines/qa-evidence-workflow.png` | `桌面 1440x2200` | 问答工作流 + 证据浏览 | `test_qa_and_evidence_visual_regression` |
-| `tests/baselines/report-panel.png` | `桌面 1440x2200` | 报告查看 + 报告导航 + 恢复完整报告 | `test_report_panel_visual_regression` |
-| `tests/baselines/mobile-experiment-center.png` | `移动端 430x2400` | 实验中心主链路 | `test_mobile_experiment_center_visual_regression` |
-| `tests/baselines/tablet-qa-evidence-workflow.png` | `平板 900x2400` | 问答工作流 + 证据浏览 | `test_tablet_qa_and_evidence_visual_regression` |
-| `tests/baselines/tablet-report-panel.png` | `平板 900x2400` | 报告查看 + 报告导航 + 恢复完整报告 | `test_tablet_report_panel_visual_regression` |
+| `tests/baselines/experiment-center.png` | `桌面 1440x2200 / Linux` | 实验中心摘要、回归钻取、报告联动 | `test_experiment_center_visual_regression` |
+| `tests/baselines/experiment-center.darwin.png` | `桌面 1440x2200` | 实验中心摘要、回归钻取、报告联动 | `test_experiment_center_visual_regression` |
+| `tests/baselines/qa-evidence-workflow.png` | `桌面 1440x2200 / Linux` | 问答工作流 + 证据浏览 | `test_qa_and_evidence_visual_regression` |
+| `tests/baselines/qa-evidence-workflow.darwin.png` | `桌面 1440x2200` | 问答工作流 + 证据浏览 | `test_qa_and_evidence_visual_regression` |
+| `tests/baselines/report-panel.png` | `桌面 1440x2200 / Linux` | 报告查看 + 报告导航 + 恢复完整报告 | `test_report_panel_visual_regression` |
+| `tests/baselines/report-panel.darwin.png` | `桌面 1440x2200` | 报告查看 + 报告导航 + 恢复完整报告 | `test_report_panel_visual_regression` |
+| `tests/baselines/mobile-experiment-center.png` | `移动端 430x2400 / Linux` | 实验中心主链路 | `test_mobile_experiment_center_visual_regression` |
+| `tests/baselines/mobile-experiment-center.darwin.png` | `移动端 430x2400` | 实验中心主链路 | `test_mobile_experiment_center_visual_regression` |
+| `tests/baselines/tablet-qa-evidence-workflow.png` | `平板 900x2400 / Linux` | 问答工作流 + 证据浏览 | `test_tablet_qa_and_evidence_visual_regression` |
+| `tests/baselines/tablet-qa-evidence-workflow.darwin.png` | `平板 900x2400` | 问答工作流 + 证据浏览 | `test_tablet_qa_and_evidence_visual_regression` |
+| `tests/baselines/tablet-report-panel.png` | `平板 900x2400 / Linux` | 报告查看 + 报告导航 + 恢复完整报告 | `test_tablet_report_panel_visual_regression` |
+| `tests/baselines/tablet-report-panel.darwin.png` | `平板 900x2400` | 报告查看 + 报告导航 + 恢复完整报告 | `test_tablet_report_panel_visual_regression` |
 
 这些基线都由 [tests/test_e2e_visual_regression.py](/Users/xioshark/Desktop/rag/tests/test_e2e_visual_regression.py) 驱动，实际像素对比由 [tests/visual_regression.py](/Users/xioshark/Desktop/rag/tests/visual_regression.py) 执行。
 
@@ -48,6 +55,7 @@
 1. 页面样式或布局有意改变，且变化经过确认。
 2. 测试归一化逻辑调整后，旧基线不再反映真实稳定状态。
 3. 新增了新的视觉回归用例，需要首次生成基线。
+4. GitHub Actions Linux 渲染结果与 macOS 本地渲染需要分别固化时。
 
 更新命令：
 
@@ -56,6 +64,7 @@ UPDATE_VISUAL_BASELINES=1 python3 -m pytest -q tests/test_e2e_visual_regression.
 ```
 
 如果只想更新单条基线，优先使用 `-k` 限定到具体测试函数。
+macOS 本地基线会落到 `*.darwin.png`；Linux / CI 默认更新对应的通用 `*.png`。
 
 ## 排障步骤
 

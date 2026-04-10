@@ -136,6 +136,10 @@ def render_markdown_document(manifest: dict) -> str:
             "markdown 文件本身，便于离开 GitHub UI 后继续复用。"
         ),
         (
+            "当前正式基线采用“Linux 通用基线 + macOS 专用基线”并存策略："
+            "默认 `*.png` 作为 CI / Linux 基线，macOS 本地回归优先读取 `*.darwin.png`。"
+        ),
+        (
             "对于同仓库 PR，失败 comment 现在还会带上这些 artifact 的可点击链接，"
             "方便直接跳到 JUnit、摘要或诊断图下载页。"
         ),
@@ -207,6 +211,7 @@ def render_markdown_document(manifest: dict) -> str:
             "1. 页面样式或布局有意改变，且变化经过确认。",
             "2. 测试归一化逻辑调整后，旧基线不再反映真实稳定状态。",
             "3. 新增了新的视觉回归用例，需要首次生成基线。",
+            "4. GitHub Actions Linux 渲染结果与 macOS 本地渲染需要分别固化时。",
             "",
             "更新命令：",
             "",
@@ -215,6 +220,7 @@ def render_markdown_document(manifest: dict) -> str:
             "```",
             "",
             "如果只想更新单条基线，优先使用 `-k` 限定到具体测试函数。",
+            "macOS 本地基线会落到 `*.darwin.png`；Linux / CI 默认更新对应的通用 `*.png`。",
             "",
             "## 排障步骤",
             "",

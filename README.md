@@ -145,7 +145,7 @@
 - Bad Case 工作台现在支持选择回放快照、覆盖 `top_k`、覆盖拒答阈值，并把每次回放落成可持续查看的实验记录。
 - 实验记录卡片支持连续选择两次回放实验做对比，直接查看参数差异、答案变化、引用重叠和归因提示。
 - 浏览器级端到端测试已覆盖“评测运行 -> 回归钻取 -> bad case 回放 -> 实验记录 -> 实验对比”“回归钻取 -> 报告面板联动”“先读报告 -> 回归钻取 -> 审计联动”以及“问答 -> 审计 -> 证据片段 -> 文档浏览”四条主链路。
-- 当前已补 6 条本地视觉回归测试，分别覆盖桌面端“实验中心”“问答工作流 + 证据浏览”“报告查看 + 报告导航 + 恢复完整报告”、移动端“实验中心”、平板视口“问答工作流 + 证据浏览”以及平板视口“报告查看 + 报告导航 + 恢复完整报告”主链路；如需更新基线，可执行 `UPDATE_VISUAL_BASELINES=1 python3 -m pytest -q tests/test_e2e_visual_regression.py`。
+- 当前已补 12 份视觉基线资产，覆盖 6 条本地视觉回归测试，分别对应桌面端“实验中心”“问答工作流 + 证据浏览”“报告查看 + 报告导航 + 恢复完整报告”、移动端“实验中心”、平板视口“问答工作流 + 证据浏览”以及平板视口“报告查看 + 报告导航 + 恢复完整报告”主链路；默认 `*.png` 作为 Linux / CI 基线，macOS 本地回归优先读取 `*.darwin.png`；如需更新基线，可执行 `UPDATE_VISUAL_BASELINES=1 python3 -m pytest -q tests/test_e2e_visual_regression.py`。
 - 当视觉回归失败时，当前会额外输出 `.actual.png` 和 `.diff.png` 诊断产物，便于快速定位像素差异；同名用例重新通过或刷新基线后，过期诊断产物会自动清理；这些产物已加入 `.gitignore`。
 - `tests/test_visual_baseline_manifest.py` 现在还会直接校验 `tests/baselines/` 目录中没有残留 `.actual.png` / `.diff.png`，把这条约束纳入最小门禁。
 - `scripts/render_visual_regression_baselines.py` 现在支持 `--summary` 和 `--path`，可在本地或 CI 打印基线变更摘要，直接看到图片对应的测试、视口和覆盖链路。

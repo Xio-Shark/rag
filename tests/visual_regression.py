@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import sys
 from io import BytesIO
 from pathlib import Path
 
@@ -51,12 +52,35 @@ def _remove_diagnostic_artifacts(baseline_path: Path) -> None:
     diff_path.unlink(missing_ok=True)
 
 
+def resolve_visual_baseline_path(baseline_path: Path) -> Path:
+    platform_name = os.getenv("VISUAL_BASELINE_PLATFORM", "").strip().lower()
+    if not platform_name:
+        platform_name = sys.platform.lower()
+
+    if platform_name.startswith("darwin"):
+        candidate = baseline_path.with_name(
+            f"{baseline_path.stem}.darwin{baseline_path.suffix}"
+        )
+        if candidate.exists():
+            return candidate
+
+    if platform_name.startswith("win"):
+        candidate = baseline_path.with_name(
+            f"{baseline_path.stem}.windows{baseline_path.suffix}"
+        )
+        if candidate.exists():
+            return candidate
+
+    return baseline_path
+
+
 def assert_visual_match(
     image_bytes: bytes,
     baseline_path: Path,
     *,
     max_diff_ratio: float = 0.002,
 ) -> None:
+    baseline_path = resolve_visual_baseline_path(baseline_path)
     baseline_path.parent.mkdir(parents=True, exist_ok=True)
 
     if os.getenv("UPDATE_VISUAL_BASELINES") == "1" or not baseline_path.exists():

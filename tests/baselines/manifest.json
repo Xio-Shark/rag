@@ -2,36 +2,72 @@
   "formal_baselines": [
     {
       "path": "tests/baselines/experiment-center.png",
+      "viewport": "桌面 1440x2200 / Linux",
+      "flow": "实验中心摘要、回归钻取、报告联动",
+      "test": "test_experiment_center_visual_regression"
+    },
+    {
+      "path": "tests/baselines/experiment-center.darwin.png",
       "viewport": "桌面 1440x2200",
       "flow": "实验中心摘要、回归钻取、报告联动",
       "test": "test_experiment_center_visual_regression"
     },
     {
       "path": "tests/baselines/qa-evidence-workflow.png",
+      "viewport": "桌面 1440x2200 / Linux",
+      "flow": "问答工作流 + 证据浏览",
+      "test": "test_qa_and_evidence_visual_regression"
+    },
+    {
+      "path": "tests/baselines/qa-evidence-workflow.darwin.png",
       "viewport": "桌面 1440x2200",
       "flow": "问答工作流 + 证据浏览",
       "test": "test_qa_and_evidence_visual_regression"
     },
     {
       "path": "tests/baselines/report-panel.png",
+      "viewport": "桌面 1440x2200 / Linux",
+      "flow": "报告查看 + 报告导航 + 恢复完整报告",
+      "test": "test_report_panel_visual_regression"
+    },
+    {
+      "path": "tests/baselines/report-panel.darwin.png",
       "viewport": "桌面 1440x2200",
       "flow": "报告查看 + 报告导航 + 恢复完整报告",
       "test": "test_report_panel_visual_regression"
     },
     {
       "path": "tests/baselines/mobile-experiment-center.png",
+      "viewport": "移动端 430x2400 / Linux",
+      "flow": "实验中心主链路",
+      "test": "test_mobile_experiment_center_visual_regression"
+    },
+    {
+      "path": "tests/baselines/mobile-experiment-center.darwin.png",
       "viewport": "移动端 430x2400",
       "flow": "实验中心主链路",
       "test": "test_mobile_experiment_center_visual_regression"
     },
     {
       "path": "tests/baselines/tablet-qa-evidence-workflow.png",
+      "viewport": "平板 900x2400 / Linux",
+      "flow": "问答工作流 + 证据浏览",
+      "test": "test_tablet_qa_and_evidence_visual_regression"
+    },
+    {
+      "path": "tests/baselines/tablet-qa-evidence-workflow.darwin.png",
       "viewport": "平板 900x2400",
       "flow": "问答工作流 + 证据浏览",
       "test": "test_tablet_qa_and_evidence_visual_regression"
     },
     {
       "path": "tests/baselines/tablet-report-panel.png",
+      "viewport": "平板 900x2400 / Linux",
+      "flow": "报告查看 + 报告导航 + 恢复完整报告",
+      "test": "test_tablet_report_panel_visual_regression"
+    },
+    {
+      "path": "tests/baselines/tablet-report-panel.darwin.png",
       "viewport": "平板 900x2400",
       "flow": "报告查看 + 报告导航 + 恢复完整报告",
       "test": "test_tablet_report_panel_visual_regression"

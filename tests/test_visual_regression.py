@@ -6,7 +6,11 @@ from pathlib import Path
 import pytest
 from PIL import Image
 
-from tests.visual_regression import assert_visual_match, stack_images_vertically
+from tests.visual_regression import (
+    assert_visual_match,
+    resolve_visual_baseline_path,
+    stack_images_vertically,
+)
 
 
 def _image_bytes(
@@ -103,3 +107,18 @@ def test_assert_visual_match_removes_stale_diagnostic_artifacts_when_updating_ba
     assert baseline_path.read_bytes() == updated_image
     assert not actual_path.exists()
     assert not diff_path.exists()
+
+
+def test_resolve_visual_baseline_path_prefers_platform_specific_variant(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    baseline_path = tmp_path / "baseline.png"
+    darwin_path = tmp_path / "baseline.darwin.png"
+    baseline_path.write_bytes(_image_bytes((255, 255, 255, 255)))
+    darwin_bytes = _image_bytes((10, 20, 30, 255))
+    darwin_path.write_bytes(darwin_bytes)
+
+    monkeypatch.setenv("VISUAL_BASELINE_PLATFORM", "darwin")
+
+    assert resolve_visual_baseline_path(baseline_path) == darwin_path
+    assert_visual_match(darwin_bytes, baseline_path)

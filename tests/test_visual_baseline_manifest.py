@@ -61,11 +61,13 @@ def test_visual_baseline_workspace_has_no_diagnostic_artifacts() -> None:
 def test_visual_baseline_manifest_matches_docs_and_readme() -> None:
     manifest = _load_manifest()
     formal_entries = manifest["formal_baselines"]
+    unique_tests = {entry["test"] for entry in formal_entries}
     readme_text = README_PATH.read_text(encoding="utf-8")
     doc_text = DOC_PATH.read_text(encoding="utf-8")
     e2e_test_text = E2E_TEST_PATH.read_text(encoding="utf-8")
 
-    assert f"当前已补 {len(formal_entries)} 条本地视觉回归测试" in readme_text
+    assert f"当前已补 {len(formal_entries)} 份视觉基线资产" in readme_text
+    assert f"覆盖 {len(unique_tests)} 条本地视觉回归测试" in readme_text
     assert "docs/visual-regression-baselines.md" in readme_text
     assert "tests/baselines/manifest.json" in doc_text
     assert ".github/workflows/visual-regression-e2e.yml" in readme_text
@@ -73,12 +75,13 @@ def test_visual_baseline_manifest_matches_docs_and_readme() -> None:
 
     for entry in formal_entries:
         baseline_name = Path(entry["path"]).name
+        canonical_baseline_name = baseline_name.replace(".darwin", "").replace(".windows", "")
         assert entry["path"] in doc_text
         assert entry["viewport"] in doc_text
         assert entry["flow"] in doc_text
         assert entry["test"] in doc_text
         assert entry["test"] in e2e_test_text
-        assert baseline_name in e2e_test_text
+        assert canonical_baseline_name in e2e_test_text
 
     for artifact in manifest["diagnostic_artifacts"]:
         assert artifact["pattern"] in doc_text
