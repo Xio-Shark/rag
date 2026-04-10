@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RAG QA Bench</title>
+    <style>
+      :root {
+        --bg: #f2efe8;
+        --panel: rgba(255, 255, 255, 0.92);
+        --accent: #0b5d4b;
+        --accent-light: #d4efe8;
+        --text: #10231d;
+        --muted: #52635f;
+        --border: rgba(16, 35, 29, 0.12);
+        --danger: #8f2d2d;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "PingFang SC", "Noto Sans SC", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(11, 93, 75, 0.18), transparent 28%),
+          linear-gradient(180deg, #f9f6ef 0%, #ebe7dc 100%);
+      }
+
+      main {
+        max-width: 1240px;
+        margin: 0 auto;
+        padding: 48px 20px 80px;
+        display: grid;
+        gap: 24px;
+      }
+
+      .hero {
+        margin-bottom: 4px;
+      }
+
+      .hero h1 {
+        margin: 0 0 12px;
+        font-size: clamp(2.2rem, 5vw, 3.8rem);
+        letter-spacing: -0.04em;
+      }
+
+      .hero p {
+        max-width: 800px;
+        margin: 0;
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.7;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+      }
+
+      .grid-wide {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+        gap: 20px;
+      }
+
+      .section-shell {
+        display: grid;
+        gap: 16px;
+      }
+
+      .section-header {
+        display: grid;
+        gap: 10px;
+        padding: 0 4px;
+      }
+
+      .section-kicker {
+        display: inline-flex;
+        width: fit-content;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(16, 35, 29, 0.06);
+        color: var(--muted);
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .section-title {
+        margin: 0;
+        font-size: clamp(1.45rem, 2.8vw, 2rem);
+        letter-spacing: -0.03em;
+      }
+
+      .section-text {
+        max-width: 760px;
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .section-path {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .path-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.7);
+        border: 1px solid var(--border);
+        color: var(--text);
+        font-size: 0.82rem;
+        font-weight: 600;
+      }
+
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 20px 60px rgba(20, 30, 27, 0.08);
+        backdrop-filter: blur(12px);
+      }
+
+      .card h2 {
+        margin: 0;
+        font-size: 1.08rem;
+        letter-spacing: -0.02em;
+      }
+
+      .card-head {
+        display: grid;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+
+      .card-step {
+        display: inline-flex;
+        width: fit-content;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(11, 93, 75, 0.1);
+        color: var(--accent);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+      }
+
+      .card-lead {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+        line-height: 1.65;
+      }
+
+      .span-two {
+        grid-column: span 2;
+      }
+
+      .card-sticky {
+        position: sticky;
+        top: 20px;
+        align-self: start;
+      }
+
+      textarea,
+      input,
+      select,
+      button {
+        width: 100%;
+        font: inherit;
+      }
+
+      textarea,
+      input,
+      select {
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 14px 16px;
+        background: rgba(255, 255, 255, 0.75);
+      }
+
+      button {
+        margin-top: 12px;
+        border: none;
+        border-radius: 999px;
+        padding: 14px 18px;
+        background: var(--accent);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .button-row {
+        display: grid;
+        gap: 10px;
+      }
+
+      .button-row.two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      pre {
+        margin: 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        line-height: 1.6;
+      }
+
+      .tag {
+        display: inline-flex;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: var(--accent-light);
+        color: var(--accent);
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+
+      .citations {
+        margin-top: 16px;
+      }
+
+      .citation,
+      .metric,
+      .list-item {
+        padding: 12px 0;
+        border-top: 1px solid var(--border);
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      .mini {
+        font-size: 0.92rem;
+        line-height: 1.65;
+      }
+
+      .row {
+        display: grid;
+        gap: 10px;
+      }
+
+      .status {
+        margin-top: 10px;
+        font-size: 0.92rem;
+        color: var(--muted);
+      }
+
+      .error {
+        color: var(--danger);
+      }
+
+      .report {
+        max-height: 420px;
+        overflow: auto;
+        padding: 14px;
+        border-radius: 16px;
+        background: rgba(16, 35, 29, 0.04);
+        border: 1px solid var(--border);
+      }
+
+      .panel-stack {
+        display: grid;
+        gap: 12px;
+      }
+
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 12px;
+        margin-top: 14px;
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 12px;
+      }
+
+      .summary-card {
+        padding: 16px;
+        border-radius: 18px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.68);
+      }
+
+      .summary-card.emphasis {
+        background:
+          linear-gradient(180deg, rgba(11, 93, 75, 0.12), rgba(11, 93, 75, 0.06)),
+          rgba(255, 255, 255, 0.7);
+        border-color: rgba(11, 93, 75, 0.16);
+      }
+
+      .summary-label {
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .summary-main {
+        margin-top: 10px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+      }
+
+      .summary-support {
+        margin-top: 8px;
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.55;
+      }
+
+      .summary-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .summary-actions .case-button {
+        padding: 8px 12px;
+        font-size: 0.84rem;
+      }
+
+      .metric-card {
+        padding: 14px;
+        border-radius: 18px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.62);
+      }
+
+      .metric-card strong,
+      .snapshot-card strong {
+        display: block;
+        font-size: 0.9rem;
+      }
+
+      .metric-value {
+        margin-top: 8px;
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+      }
+
+      .metric-note {
+        margin-top: 6px;
+        font-size: 0.84rem;
+        color: var(--muted);
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+
+      .status-unchanged {
+        background: rgba(16, 35, 29, 0.08);
+        color: var(--text);
+      }
+
+      .status-improved {
+        background: rgba(11, 93, 75, 0.14);
+        color: var(--accent);
+      }
+
+      .status-regressed {
+        background: rgba(143, 45, 45, 0.14);
+        color: var(--danger);
+      }
+
+      .status-mixed {
+        background: rgba(165, 112, 23, 0.16);
+        color: #8a5f14;
+      }
+
+      .compare-layout,
+      .snapshot-grid {
+        display: grid;
+        gap: 14px;
+      }
+
+      .snapshot-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      .snapshot-card {
+        padding: 16px;
+        border-radius: 18px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.62);
+      }
+
+      .snapshot-diff {
+        display: grid;
+        gap: 10px;
+      }
+
+      .snapshot-row {
+        display: grid;
+        grid-template-columns: 140px 1fr;
+        gap: 10px;
+        padding-top: 10px;
+        border-top: 1px solid var(--border);
+        align-items: start;
+      }
+
+      .snapshot-row:first-child {
+        border-top: none;
+        padding-top: 0;
+      }
+
+      .snapshot-row code {
+        font-size: 0.88rem;
+      }
+
+      .delta-note {
+        font-size: 0.84rem;
+        color: var(--muted);
+      }
+
+      .callout {
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: rgba(11, 93, 75, 0.08);
+        border: 1px solid rgba(11, 93, 75, 0.12);
+      }
+
+      .callout.danger {
+        background: rgba(143, 45, 45, 0.08);
+        border-color: rgba(143, 45, 45, 0.12);
+      }
+
+      .case-group {
+        display: grid;
+        gap: 10px;
+      }
+
+      .case-group + .case-group {
+        margin-top: 14px;
+      }
+
+      .case-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .case-button {
+        width: auto;
+        margin-top: 0;
+        padding: 10px 14px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--text);
+        font-size: 0.9rem;
+        font-weight: 600;
+      }
+
+      .case-button.active {
+        background: var(--accent);
+        color: white;
+        border-color: transparent;
+      }
+
+      .case-button:disabled {
+        opacity: 0.52;
+        cursor: not-allowed;
+      }
+
+      .detail-grid {
+        display: grid;
+        gap: 12px;
+      }
+
+      .detail-columns {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+      }
+
+      .detail-block {
+        padding: 14px;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.64);
+      }
+
+      .detail-block pre {
+        font-size: 0.88rem;
+      }
+
+      .neighbor-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .neighbor-item {
+        padding: 12px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.62);
+      }
+
+      .neighbor-item.target {
+        border-color: rgba(11, 93, 75, 0.3);
+        background: rgba(11, 93, 75, 0.08);
+      }
+
+      .document-chunk-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .document-chunk {
+        padding: 12px;
+        border-radius: 14px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.62);
+      }
+
+      .document-chunk.focused {
+        border-color: rgba(11, 93, 75, 0.32);
+        background: rgba(11, 93, 75, 0.08);
+      }
+
+      .document-chunk.hidden {
+        display: none;
+      }
+
+      .match-chip {
+        display: inline-flex;
+        margin-top: 8px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: rgba(11, 93, 75, 0.1);
+        color: var(--accent);
+        font-size: 0.78rem;
+        font-weight: 700;
+      }
+
+      .replay-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+      }
+
+      .replay-control-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        margin: 14px 0;
+      }
+
+      .field-label {
+        display: grid;
+        gap: 6px;
+        font-size: 0.84rem;
+        color: var(--muted);
+      }
+
+      .history-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .history-item {
+        display: grid;
+        gap: 10px;
+        padding: 14px;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.64);
+      }
+
+      .history-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .history-actions .case-button {
+        padding: 8px 12px;
+      }
+
+      .plain-list {
+        margin: 0;
+        padding-left: 18px;
+      }
+
+      .plain-list li + li {
+        margin-top: 8px;
+      }
+
+      .report-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .report-actions .case-button {
+        padding: 8px 12px;
+      }
+
+      .report-nav {
+        margin-top: 12px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.58);
+        overflow: hidden;
+      }
+
+      .report-nav summary {
+        cursor: pointer;
+        padding: 12px 14px;
+        font-weight: 700;
+        list-style: none;
+      }
+
+      .report-nav summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .report-nav[open] summary {
+        border-bottom: 1px solid var(--border);
+      }
+
+      .report-nav-body {
+        display: grid;
+        gap: 10px;
+        padding: 12px 14px 14px;
+      }
+
+      .report-caption {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.55;
+      }
+
+      .outline-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .outline-button {
+        width: 100%;
+        margin-top: 0;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.72);
+        color: var(--text);
+        text-align: left;
+        font-size: 0.86rem;
+        font-weight: 600;
+      }
+
+      .outline-button.level-2 {
+        padding-left: 20px;
+      }
+
+      .outline-button.level-3 {
+        padding-left: 30px;
+      }
+
+      .outline-button.active {
+        background: var(--accent-light);
+        border-color: rgba(11, 93, 75, 0.22);
+        color: var(--accent);
+      }
+
+      @media (max-width: 960px) {
+        .span-two {
+          grid-column: auto;
+        }
+
+        .card-sticky {
+          position: static;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <span class="tag">RAG QA Bench</span>
+        <h1>可解释的问答与评测闭环</h1>
+        <p>
+          直接在页面里完成文档导入、问答、评测运行、报告查看和回归对比，把 RAG
+          工程的关键环节压缩成一个可演示、可追溯、可回放的最小闭环。
+        </p>
+      </section>
+
+      <section class="section-shell">
+        <div class="section-header">
+          <span class="section-kicker">问答工作流</span>
+          <h2 class="section-title">从提问到审计，再定位到证据和文档</h2>
+          <p class="section-text">
+            这一组面板负责日常问答验证。先提问，再回看审计、证据片段和整篇文档，确认回答是否真正来自知识库。
+          </p>
+        </div>
+
+        <div class="grid">
+        <article class="card">
+          <div class="card-head">
+            <span class="card-step">01</span>
+            <h2>提问演示</h2>
+            <p class="card-lead">输入问题后立即展示回答、引用与审计入口，是整个工作台的起点。</p>
+          </div>
+          <textarea
+            id="query"
+            rows="5"
+            placeholder="输入问题，例如：系统支持哪些核心能力？"
+          ></textarea>
+          <button id="ask-button">发送问答请求</button>
+          <div id="answer" class="citations muted">等待请求</div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <span class="card-step">02</span>
+            <h2>文档导入</h2>
+            <p class="card-lead">导入或刷新样例文档，确保当前问答和评测使用的知识源是可见、可回查的。</p>
+          </div>
+          <input id="import-dir" value="." placeholder="相对 data/docs 的目录" />
+          <div class="button-row two">
+            <button id="import-button">执行导入</button>
+            <button id="documents-button">刷新文档列表</button>
+          </div>
+          <div id="import-status" class="status muted">等待请求</div>
+          <div id="documents-output" class="mini muted">暂无文档信息</div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <span class="card-step">03</span>
+            <h2>系统状态</h2>
+            <p class="card-lead">快速确认服务、数据库和索引状态，避免把异常环境误判成问答质量问题。</p>
+          </div>
+          <button id="health-button">刷新健康状态</button>
+          <pre id="health-output" class="muted">等待请求</pre>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <span class="card-step">04</span>
+            <h2>审计详情</h2>
+            <p class="card-lead">查看单次问答的候选证据、运行参数和失败阶段，定位问题时优先看这里。</p>
+          </div>
+          <input id="audit-id-input" placeholder="输入审计 ID 或先执行一次问答" />
+          <div class="button-row two">
+            <button id="audit-button">查询审计详情</button>
+            <button id="audit-runs-button">刷新问答记录</button>
+          </div>
+          <div id="audit-output" class="mini muted">等待问答或输入审计 ID</div>
+          <div id="audit-list-output" class="mini muted">暂无问答记录</div>
+        </article>
+        </div>
+      </section>
+
+      <section class="section-shell">
+        <div class="section-header">
+          <span class="section-kicker">实验中心</span>
+          <h2 class="section-title">按运行、对比、钻取、回放和报告五步组织实验</h2>
+          <p class="section-text">
+            这一组面板把评测和 bad case 调参放进同一条路径里。先跑评测，再对比、钻取、回放，最后用报告收口。
+          </p>
+          <div class="section-path">
+            <span class="path-pill">运行评测</span>
+            <span class="path-pill">生成对比</span>
+            <span class="path-pill">钻取 bad case</span>
+            <span class="path-pill">回放实验</span>
+            <span class="path-pill">报告定位</span>
+          </div>
+        </div>
+
+        <div class="grid-wide">
+        <article class="card">
+          <div class="card-head">
+            <span class="card-step">05</span>
+            <h2>评测运行</h2>
+            <p class="card-lead">选择数据集和快照直接发起运行，为后续对比和回放准备基线。</p>
+          </div>
+          <div class="row">
+            <select id="dataset-select">
+              <option value="">选择数据集</option>
+            </select>
+            <select id="snapshot-select">
+              <option value="">选择快照</option>
+            </select>
+          </div>
+          <div class="button-row two">
+            <button id="datasets-button">刷新数据集/快照</button>
+            <button id="run-eval-button">运行评测</button>
+          </div>
+          <div id="run-eval-output" class="mini muted">等待请求</div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <span class="card-step">06</span>
+            <h2>最近评测</h2>
+            <p class="card-lead">快速回看最近一次或最近几次运行结果，判断是否值得继续深入排查。</p>
+          </div>
+          <div class="button-row two">
+            <button id="eval-button">查看最近评测</button>
+            <button id="runs-button">刷新运行列表</button>
+          </div>
+          <div id="eval-output" class="mini muted">等待请求</div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <span class="card-step">07</span>
+            <h2>评测对比</h2>
+            <p class="card-lead">选择两次运行直接看指标、参数与 bad case 变化，是进入回归分析的主入口。</p>
+          </div>
+          <div class="row">
+            <select id="base-run-select">
+              <option value="">选择基线运行</option>
+            </select>
+            <select id="target-run-select">
+              <option value="">选择对比运行</option>
+            </select>
+          </div>
+          <button id="compare-button">生成对比</button>
+          <div id="compare-output" class="mini muted">等待请求</div>
+        </article>
+        </div>
+
+        <div class="grid-wide">
+        <article class="card">
+          <div class="card-head">
+            <span class="card-step">08</span>
+            <h2>快照列表</h2>
+            <p class="card-lead">并排查看各个快照配置，理解参数差异对指标和 bad case 的影响来源。</p>
+          </div>
+          <button id="snapshot-button">刷新快照</button>
+          <div id="snapshot-output" class="mini muted">等待请求</div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <span class="card-step">09</span>
+            <h2>回归钻取</h2>
+            <p class="card-lead">点击 bad case 后同步展示基线/对比答案、报告片段和继续操作入口。</p>
+          </div>
+          <div id="compare-detail-output" class="mini muted">先生成一次对比，再点击 bad case</div>
+        </article>
+
+        <article class="card card-sticky">
+          <div class="card-head">
+            <span class="card-step">10</span>
+            <h2>报告查看</h2>
+            <p class="card-lead">在实验过程中始终保留一块报告面板，用来核对完整正文或定位到具体 case。</p>
+          </div>
+          <div class="row">
+            <select id="report-run-select">
+              <option value="">选择评测运行</option>
+            </select>
+            <select id="report-format-select">
+              <option value="markdown">Markdown</option>
+              <option value="json">JSON</option>
+            </select>
+          </div>
+          <button id="report-button">读取报告正文</button>
+          <div id="report-meta" class="status muted">等待请求</div>
+          <div class="report-actions">
+            <button id="report-restore-button" class="case-button" type="button" disabled>
+              恢复完整报告
+            </button>
+          </div>
+          <details class="report-nav" open>
+            <summary>报告导航</summary>
+            <div class="report-nav-body">
+              <p class="report-caption">
+                读取 Markdown 报告后，这里会列出标题与 bad case 节点，支持快速定位和恢复完整正文。
+              </p>
+              <div id="report-outline-output" class="mini muted">读取 Markdown 报告后显示目录</div>
+            </div>
+          </details>
+          <pre id="report-output" class="report muted">暂无报告</pre>
+        </article>
+
+        <article class="card span-two">
+          <div class="card-head">
+            <span class="card-step">11</span>
+            <h2>Bad Case 工作台</h2>
+            <p class="card-lead">围绕当前 bad case 连续试验不同快照和阈值，直接验证参数调整是否有效。</p>
+          </div>
+          <div id="replay-context-output" class="mini muted">点击 bad case 的“重新回放”后绑定当前案例</div>
+          <div class="replay-control-grid">
+            <label class="field-label">
+              回放快照
+              <select id="replay-snapshot-select">
+                <option value="">选择回放快照</option>
+              </select>
+            </label>
+            <label class="field-label">
+              top_k 覆盖
+              <input
+                id="replay-top-k-input"
+                type="number"
+                min="1"
+                max="5"
+                placeholder="留空跟随快照"
+              />
+            </label>
+            <label class="field-label">
+              拒答阈值覆盖
+              <input
+                id="replay-threshold-input"
+                type="number"
+                min="0"
+                max="1"
+                step="0.01"
+                placeholder="留空跟随快照"
+              />
+            </label>
+          </div>
+          <div class="button-row two">
+            <button id="replay-run-button">执行回放实验</button>
+            <button id="replay-history-button">刷新实验记录</button>
+          </div>
+          <div id="replay-output" class="mini muted">点击 bad case 的“重新回放”后显示</div>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <span class="card-step">12</span>
+            <h2>实验记录</h2>
+            <p class="card-lead">把每次回放沉淀成可对比的记录，避免实验结果只停留在一次性展示上。</p>
+          </div>
+          <div class="row">
+            <select id="replay-base-select">
+              <option value="">选择基线实验</option>
+            </select>
+            <select id="replay-target-select">
+              <option value="">选择对比实验</option>
+            </select>
+          </div>
+          <button id="replay-compare-button">对比实验记录</button>
+          <div id="replay-compare-output" class="mini muted">选择两次实验后生成对比</div>
+          <div id="replay-history-output" class="mini muted">暂无实验记录</div>
+        </article>
+        </div>
+      </section>
+
+      <section class="section-shell">
+        <div class="section-header">
+          <span class="section-kicker">证据浏览</span>
+          <h2 class="section-title">把审计候选和整篇文档放在同一视图里复核</h2>
+          <p class="section-text">
+            当前页面最底层专门留给证据阅读。先看命中的 chunk，再回到整篇文档时间线里判断上下文是否充分。
+          </p>
+        </div>
+
+        <div class="grid-wide">
+        <article class="card">
+          <div class="card-head">
+            <span class="card-step">13</span>
+            <h2>证据片段</h2>
+            <p class="card-lead">展示当前命中 chunk 和相邻上下文，验证引用是否真的支撑回答。</p>
+          </div>
+          <div id="chunk-output" class="mini muted">点击审计详情里的检索候选后显示</div>
+        </article>
+
+        <article class="card span-two">
+          <div class="card-head">
+            <span class="card-step">14</span>
+            <h2>文档浏览</h2>
+            <p class="card-lead">把整篇文档按 chunk 时间线展开，并支持问题或关键词过滤，快速定位命中片段。</p>
+          </div>
+          <input id="document-filter-input" placeholder="输入关键词或直接使用当前问题定位 chunk" />
+          <div id="document-output" class="mini muted">点击文档列表或证据片段后显示</div>
+        </article>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="/static/index.js"></script>
+  </body>
+</html>
