@@ -1,0 +1,68 @@
+name: Mainline Quality Gate
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/mainline-quality-gate.yml"
+      - "alembic.ini"
+      - "app/**"
+      - "migrations/**"
+      - "pyproject.toml"
+      - "scripts/**"
+      - "tests/**"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/mainline-quality-gate.yml"
+      - "alembic.ini"
+      - "app/**"
+      - "migrations/**"
+      - "pyproject.toml"
+      - "scripts/**"
+      - "tests/**"
+
+jobs:
+  mainline-quality-gate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Install Chromium
+        run: python -m playwright install --with-deps chromium
+
+      - name: Run Ruff
+        run: python -m ruff check app tests scripts
+
+      - name: Run pytest
+        run: |
+          python -m pytest -q \
+            --junitxml "$RUNNER_TEMP/mainline-quality-gate-junit.xml"
+
+      - name: Run compileall
+        run: python -m compileall app tests scripts
+
+      - name: Upload JUnit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mainline-quality-gate-junit
+          path: ${{ runner.temp }}/mainline-quality-gate-junit.xml
+          if-no-files-found: error
+          retention-days: 7

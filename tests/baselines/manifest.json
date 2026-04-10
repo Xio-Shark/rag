@@ -1,0 +1,52 @@
+{
+  "formal_baselines": [
+    {
+      "path": "tests/baselines/experiment-center.png",
+      "viewport": "桌面 1440x2200",
+      "flow": "实验中心摘要、回归钻取、报告联动",
+      "test": "test_experiment_center_visual_regression"
+    },
+    {
+      "path": "tests/baselines/qa-evidence-workflow.png",
+      "viewport": "桌面 1440x2200",
+      "flow": "问答工作流 + 证据浏览",
+      "test": "test_qa_and_evidence_visual_regression"
+    },
+    {
+      "path": "tests/baselines/report-panel.png",
+      "viewport": "桌面 1440x2200",
+      "flow": "报告查看 + 报告导航 + 恢复完整报告",
+      "test": "test_report_panel_visual_regression"
+    },
+    {
+      "path": "tests/baselines/mobile-experiment-center.png",
+      "viewport": "移动端 430x2400",
+      "flow": "实验中心主链路",
+      "test": "test_mobile_experiment_center_visual_regression"
+    },
+    {
+      "path": "tests/baselines/tablet-qa-evidence-workflow.png",
+      "viewport": "平板 900x2400",
+      "flow": "问答工作流 + 证据浏览",
+      "test": "test_tablet_qa_and_evidence_visual_regression"
+    },
+    {
+      "path": "tests/baselines/tablet-report-panel.png",
+      "viewport": "平板 900x2400",
+      "flow": "报告查看 + 报告导航 + 恢复完整报告",
+      "test": "test_tablet_report_panel_visual_regression"
+    }
+  ],
+  "diagnostic_artifacts": [
+    {
+      "pattern": "tests/baselines/*.actual.png",
+      "purpose": "保存当前测试实际截图",
+      "source": "assert_visual_match(...)"
+    },
+    {
+      "pattern": "tests/baselines/*.diff.png",
+      "purpose": "高亮像素差异区域",
+      "source": "assert_visual_match(...)"
+    }
+  ]
+}
