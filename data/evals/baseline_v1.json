@@ -6,7 +6,7 @@
       "query": "系统支持哪些核心能力？",
       "should_refuse": false,
       "expected_source_paths": [
-        "/Users/xioshark/Desktop/rag/data/docs/sample_company_policy.md"
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/sample_company_policy.md"
       ],
       "expected_keywords": [
         "文档导入",
@@ -23,7 +23,7 @@
       "query": "平台如何同时控制无依据回答并支持回归？",
       "should_refuse": false,
       "expected_source_paths": [
-        "/Users/xioshark/Desktop/rag/data/docs/sample_company_policy.md"
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/sample_company_policy.md"
       ],
       "expected_keywords": [
         "拒答",
@@ -38,7 +38,7 @@
       "query": "评测是通过什么方式触发的？",
       "should_refuse": false,
       "expected_source_paths": [
-        "/Users/xioshark/Desktop/rag/data/docs/sample_product_notes.txt"
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/sample_product_notes.txt"
       ],
       "expected_keywords": [
         "命令行",
@@ -53,7 +53,7 @@
       "query": "路线图如何安排 PDF 和多知识库能力？",
       "should_refuse": false,
       "expected_source_paths": [
-        "/Users/xioshark/Desktop/rag/data/docs/sample_roadmap.md"
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/sample_roadmap.md"
       ],
       "expected_keywords": [
         "PDF 文本提取",
@@ -68,7 +68,7 @@
       "query": "后续版本会扩展哪些能力？",
       "should_refuse": false,
       "expected_source_paths": [
-        "/Users/xioshark/Desktop/rag/data/docs/sample_roadmap.md"
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/sample_roadmap.md"
       ],
       "expected_keywords": [
         "多知识库",
@@ -83,7 +83,7 @@
       "query": "系统优先优化哪些指标？",
       "should_refuse": false,
       "expected_source_paths": [
-        "/Users/xioshark/Desktop/rag/data/docs/sample_roadmap.md"
+        "/Users/xioshark/Desktop/career/滕彦翕/项目/rag/data/docs/sample_roadmap.md"
       ],
       "expected_keywords": [
         "引用正确率",

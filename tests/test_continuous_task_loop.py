@@ -1308,6 +1308,7 @@ def test_check_once_resumes_interrupted_loop_with_fake_codex(tmp_path: Path) -> 
     state["status"] = "interrupted"
     state["last_stop_reason"] = "interrupted"
     state["updated_at"] = "2026-03-15T01:10:00Z"
+    state["deadline_at"] = "2099-12-31T00:00:00Z"
     save_state(paths, state)
 
     result = subprocess.run(
@@ -1416,6 +1417,7 @@ def test_watch_mode_emits_progress_report(tmp_path: Path) -> None:
     state["status"] = "interrupted"
     state["last_stop_reason"] = "interrupted"
     state["updated_at"] = "2026-03-15T01:10:00Z"
+    state["deadline_at"] = "2099-12-31T00:00:00Z"
     save_state(paths, state)
 
     result = subprocess.run(

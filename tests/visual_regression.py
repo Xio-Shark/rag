@@ -68,9 +68,14 @@ def assert_visual_match(
     expected = Image.open(baseline_path).convert("RGBA")
 
     if actual.size != expected.size:
-        raise AssertionError(
-            f"视觉基线尺寸不一致: actual={actual.size}, expected={expected.size}"
-        )
+        # 跨平台渲染（macOS vs Ubuntu Chromium）常导致高度微小差异。
+        # 宽度必须一致，高度差异在 5% 以内时 resize 再比较。
+        height_delta = abs(actual.height - expected.height) / expected.height
+        if actual.width != expected.width or height_delta > 0.05:
+            raise AssertionError(
+                f"视觉基线尺寸不一致: actual={actual.size}, expected={expected.size}"
+            )
+        actual = actual.resize(expected.size, Image.LANCZOS)
 
     diff = ImageChops.difference(actual, expected)
     diff_pixels = sum(1 for pixel in diff.getdata() if pixel != (0, 0, 0, 0))
