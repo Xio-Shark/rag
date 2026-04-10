@@ -1,0 +1,11 @@
+{
+  "name": "recall_boost",
+  "description": "降低检索阈值并保留更多候选，适合观察更激进召回对指标的影响。",
+  "top_k": 3,
+  "retrieval_candidate_k": 25,
+  "chunk_size": 500,
+  "chunk_overlap": 80,
+  "retrieval_threshold": 0.1,
+  "min_evidence_chunks": 1,
+  "prompt_version": "v1-recall"
+}

@@ -1,0 +1,12 @@
+{
+  "name": "default",
+  "description": "默认演示快照，优先保证引用精度、拒答稳定性和小语料演示效果。",
+  "top_k": 3,
+  "retrieval_candidate_k": 20,
+  "chunk_size": 500,
+  "chunk_overlap": 80,
+  "retrieval_threshold": 0.15,
+  "min_evidence_chunks": 1,
+  "prompt_version": "v1"
+}
+
